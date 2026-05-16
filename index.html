@@ -150,7 +150,7 @@
                         <h3 class="text-lg font-semibold text-gray-900">Top Produk Terlaris</h3>
                         <p class="text-sm text-gray-500">Rincian performa produk (Tidak termasuk pesanan Batal).</p>
                     </div>
-                    <select id="sortProdukMode" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 p-2 outline-none">
+                    <select id="sortProdukMode" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 p-2 outline-none hidden sm:block">
                         <option value="QTY">Paling Banyak Dibeli (Qty)</option>
                         <option value="NOMINAL">Penjualan Tertinggi (Nominal)</option>
                         <option value="FREQ">Paling Sering Dipesan (Frekuensi)</option>
@@ -162,9 +162,16 @@
                             <tr>
                                 <th class="px-4 py-3 w-10 text-center">#</th>
                                 <th class="px-4 py-3 min-w-[200px]">Produk & SKU</th>
-                                <th class="px-4 py-3 text-center">Frekuensi</th>
-                                <th class="px-4 py-3 text-center">Total Qty</th>
-                                <th class="px-4 py-3 text-right">Total Nominal</th>
+                                <!-- HEADER KLIKABLE UNTUK FILTER -->
+                                <th class="px-4 py-3 text-center cursor-pointer hover:bg-gray-200 transition-colors group" onclick="changeSort('FREQ')">
+                                    Frekuensi <i data-lucide="arrow-down" class="inline w-3 h-3 ml-1 opacity-40 group-hover:opacity-100"></i>
+                                </th>
+                                <th class="px-4 py-3 text-center cursor-pointer hover:bg-gray-200 transition-colors group" onclick="changeSort('QTY')">
+                                    Total Qty <i data-lucide="arrow-down" class="inline w-3 h-3 ml-1 opacity-40 group-hover:opacity-100"></i>
+                                </th>
+                                <th class="px-4 py-3 text-right cursor-pointer hover:bg-gray-200 transition-colors group" onclick="changeSort('NOMINAL')">
+                                    Total Nominal <i data-lucide="arrow-down" class="inline w-3 h-3 ml-1 opacity-40 group-hover:opacity-100"></i>
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="topProdukBody">
@@ -423,7 +430,7 @@
                 const row = rawJson[i]; if(!row || row.length<5) continue;
                 const noPesanan = cleanStr(row[0]); if(!noPesanan) continue;
                 
-                // Urutan sesuai 49 Kolom Shopee
+                // Urutan 49 Kolom Shopee
                 const status = cleanStr(row[1]), alasan = cleanStr(row[2])||'-', resi = cleanStr(row[4])||'-';
                 const kurirAsli = cleanStr(row[5])||'-', sku = cleanStr(row[12])||'-', namaProduk = cleanStr(row[13])||'-';
                 const hrgAwal = parseNum(row[16]), hrgDiskon = parseNum(row[17]), qty = parseNum(row[18]);
@@ -432,6 +439,9 @@
                 const pDiskonShopee = parseNum(row[31]), pDiskonPenjual = parseNum(row[32]);
                 const ongkirP = parseNum(row[35]), potOngkir = parseNum(row[36]), ongkirR = parseNum(row[37]), totBayar = parseNum(row[38]), perkOngkir = parseNum(row[39]);
                 
+                // Tanggal Shopee (Kolom 49 = Index 48)
+                const tglD1 = cleanStr(row[48]) || cleanStr(row[9]) || '-';
+
                 const item = { namaProduk, sku, hargaDiskon: hrgDiskon, qty, totalItem: hrgDiskon*qty };
 
                 if(rawOrders.has(noPesanan)){
@@ -439,7 +449,7 @@
                     ord.items.push(item); ord.totJual += item.totalItem;
                 } else {
                     rawOrders.set(noPesanan, {
-                        noPesanan, status, alasan, resi, kurirAsli, kurirNormal: normKurir(kurirAsli),
+                        noPesanan, status, alasan, resi, kurirAsli, kurirNormal: normKurir(kurirAsli), tglD1,
                         totJual: item.totalItem, 
                         dPenjual, vPenjual, vShopee, pDiskonShopee, pDiskonPenjual,
                         ongkirP, potOngkir, ongkirR, totBayar, perkOngkir,
@@ -527,6 +537,13 @@
                 const ongAwal = parseNum(row[17]), ongDSeller = parseNum(row[18]), ongDPlat = parseNum(row[19]);
                 const buyFee = parseNum(row[24]), totPaid = parseNum(row[28]), refAm = parseNum(row[22]);
                 
+                // Menentukan Tgl Berdasarkan Status (Tokopedia)
+                const createTime = cleanStr(row[29]), deliveryTime = cleanStr(row[33]), cancelTime = cleanStr(row[34]);
+                let tglD1 = createTime;
+                const sl = status.toLowerCase();
+                if(sl.includes('batal') || sl.includes('cancel')) tglD1 = cancelTime || createTime;
+                else if(sl.includes('selesai') || sl.includes('delivered')) tglD1 = deliveryTime || createTime;
+
                 const item = { namaProduk, sku, hargaDiskon: (totItem/qty)||0, qty, totalItem: totItem };
 
                 if(rawOrders.has(id)){
@@ -534,7 +551,7 @@
                     ord.dPlat+=dPlatform; ord.dSel+=dSeller;
                 } else {
                     rawOrders.set(id, {
-                        noPesanan: id, invoice, status, alasan, resi, kurirAsli, kurirNormal: normKurir(kurirAsli),
+                        noPesanan: id, invoice, status, alasan, resi, kurirAsli, kurirNormal: normKurir(kurirAsli), tglD1,
                         totJual: totItem, dPlat: dPlatform, dSel: dSeller, 
                         ongkirP: ongAwal, potOngkir: ongDPlat, ongkirR: refAm, totBayar: totPaid, perkOngkir: ongDSeller,
                         items: [item]
@@ -650,6 +667,11 @@
         }
 
         // Render Top Products (Terlaris)
+        window.changeSort = function(mode) {
+            document.getElementById('sortProdukMode').value = mode;
+            renderTopProducts();
+        }
+
         function renderTopProducts() {
             const tbody = document.getElementById('topProdukBody');
             tbody.innerHTML = '';
@@ -657,7 +679,6 @@
             
             let productStats = new Map();
             rawOrders.forEach(o => {
-                // Jangan hitung jika pesanannya batal
                 let isBatal = o.status.toLowerCase().includes('batal') || o.status.toLowerCase().includes('cancel');
                 if(isBatal) return;
                 
@@ -709,6 +730,7 @@
             ui.compCont.className = `p-6 rounded-xl border border-${color}-200 bg-${color}-50 mt-8`;
             document.getElementById('compareTitle').className = `text-lg font-bold text-${color}-900 flex items-center gap-2`;
             document.getElementById('btnUploadCompare').className = `bg-${color}-600 hover:bg-${color}-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer flex items-center gap-2`;
+            document.getElementById('compCancelTitle').textContent = `Batal di ${currentPlatform==='TOKOPEDIA'?'Tokopedia':'Shopee'}`;
         }
 
         document.getElementById('excelFileCompare').addEventListener('change', (e) => {
@@ -725,6 +747,7 @@
                     for(let i=1; i<raw.length; i++){
                         if(!raw[i] || raw[i].length<5) continue;
                         let invoiceD2 = cleanStr(raw[i][0]);
+                        let tglD2 = cleanStr(raw[i][1]); // Kolom ke 2 Data 2
                         let noD2 = cleanStr(raw[i][2]);
                         let nomD2 = parseNum(raw[i][4]);
                         tot2++;
@@ -748,11 +771,11 @@
                             let isDiff = Math.abs(oD1.totJual - nomD2) > 100;
 
                             if(isBatal){
-                                btl++; compareData.push({tipe:'BATAL_DI_SHOPEE', noPesanan: cleanNoD2, invoiceD2, totalD1: oD1.totJual, totalD2: nomD2, selisih: nomD2 - oD1.totJual, statusD1: oD1.status, kurirD1: oD1.kurirNormal, orderD1Data: oD1});
+                                btl++; compareData.push({tipe:'BATAL_DI_SHOPEE', noPesanan: cleanNoD2, invoiceD2, tglD2, tglD1: oD1.tglD1, totalD1: oD1.totJual, totalD2: nomD2, selisih: nomD2 - oD1.totJual, statusD1: oD1.status, kurirD1: oD1.kurirNormal, orderD1Data: oD1});
                             } else if(isDiff){
-                                diff++; compareData.push({tipe:'BEDA_NOMINAL', noPesanan: cleanNoD2, invoiceD2, totalD1: oD1.totJual, totalD2: nomD2, selisih: Math.abs(oD1.totJual - nomD2), statusD1: oD1.status, kurirD1: oD1.kurirNormal, orderD1Data: oD1});
+                                diff++; compareData.push({tipe:'BEDA_NOMINAL', noPesanan: cleanNoD2, invoiceD2, tglD2, tglD1: oD1.tglD1, totalD1: oD1.totJual, totalD2: nomD2, selisih: Math.abs(oD1.totJual - nomD2), statusD1: oD1.status, kurirD1: oD1.kurirNormal, orderD1Data: oD1});
                             } else {
-                                match++; compareData.push({tipe:'SESUAI', noPesanan: cleanNoD2, invoiceD2, totalD1: oD1.totJual, totalD2: nomD2, selisih: 0, statusD1: oD1.status, kurirD1: oD1.kurirNormal, orderD1Data: oD1});
+                                match++; compareData.push({tipe:'SESUAI', noPesanan: cleanNoD2, invoiceD2, tglD2, tglD1: oD1.tglD1, totalD1: oD1.totJual, totalD2: nomD2, selisih: 0, statusD1: oD1.status, kurirD1: oD1.kurirNormal, orderD1Data: oD1});
                             }
                         }
                     }
@@ -859,15 +882,15 @@
             document.getElementById('compModalIconCont').className = `flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-${col}-100`;
             const elIc = document.getElementById('compModalIcon'); elIc.setAttribute('data-lucide', icon); elIc.className = `h-6 w-6 text-${col}-600`;
 
-            const stSel = document.getElementById('compModalStatusFilter'); stSel.innerHTML='<option value="ALL">Semua Status</option>';
+            const stSel = document.getElementById('compModalStatusFilter'); stSel.innerHTML=`<option value="ALL">Status ${currentPlatform==='TOKOPEDIA'?'Tokopedia':'Shopee'}</option>`;
             [...new Set(f.map(i=>i.statusD1))].forEach(s=>stSel.appendChild(new Option(s,s)));
             const krSel = document.getElementById('compModalKurirFilter'); krSel.innerHTML='<option value="ALL">Semua Kurir</option>';
             [...new Set(f.map(i=>i.kurirD1))].forEach(k=>krSel.appendChild(new Option(k,k)));
 
             let head = document.getElementById('compModalHead');
             let platName = currentPlatform === 'TOKOPEDIA' ? 'Tokopedia' : 'Shopee';
-            head.innerHTML = `<th class="px-4 py-3 w-8"></th><th class="px-4 py-3">Pesanan</th><th class="px-4 py-3">Status ${platName}</th>`;
-            if(type==='BEDA_NOMINAL') head.innerHTML += `<th class="px-4 py-3 text-right">Data 1</th><th class="px-4 py-3 text-right">Data 2</th><th class="px-4 py-3 text-right">Selisih</th>`;
+            head.innerHTML = `<th class="px-4 py-3 w-8"></th><th class="px-4 py-3">Pesanan</th><th class="px-4 py-3">Status ${platName}</th><th class="px-4 py-3">Tgl ${platName}</th><th class="px-4 py-3">Tgl Data 2</th>`;
+            if(type==='BEDA_NOMINAL' || type==='BATAL_DI_SHOPEE') head.innerHTML += `<th class="px-4 py-3 text-right">Data 1</th><th class="px-4 py-3 text-right">Data 2</th><th class="px-4 py-3 text-right">Selisih</th>`;
             else head.innerHTML += `<th class="px-4 py-3 text-right">Nominal Data 1</th>`;
 
             applyCompFilters(); m.classList.remove('hidden'); lucide.createIcons();
@@ -882,15 +905,21 @@
             f.forEach((r, i) => {
                 let tr = document.createElement('tr'); tr.className = `${i%2===0?'bg-white':'bg-gray-50'} border-b hover:bg-blue-50 transition-colors`;
                 let com = `<td class="px-4 py-3 cursor-pointer text-blue-500" onclick="window.toggleRow('c_${r.noPesanan}')"><i data-lucide="chevron-down" class="w-4 h-4"></i></td>
-                <td class="px-4 py-3"><div class="font-bold text-gray-900 cursor-pointer" onclick="window.toggleRow('c_${r.noPesanan}')">${r.noPesanan}</div><div class="text-[10px] text-gray-500 mt-0.5">Inv Data-2: ${r.invoiceD2 || '-'}</div><span class="inline-flex items-center px-2 py-0.5 mt-1 rounded text-[10px] font-medium bg-blue-100 text-blue-800">${r.kurirD1}</span></td><td class="px-4 py-3"><div class="text-xs text-gray-700">${r.statusD1}</div></td>`;
-                if(curCompType==='BEDA_NOMINAL') tr.innerHTML = com + `<td class="px-4 py-3 text-right font-medium">${formatRp(r.totalD1)}</td><td class="px-4 py-3 text-right font-medium">${formatRp(r.totalD2)}</td><td class="px-4 py-3 text-right font-bold text-yellow-600">${formatRp(r.selisih)}</td>`;
-                else tr.innerHTML = com + `<td class="px-4 py-3 text-right font-bold text-gray-900">${formatRp(r.totalD1)}</td>`;
+                <td class="px-4 py-3"><div class="font-bold text-gray-900 cursor-pointer" onclick="window.toggleRow('c_${r.noPesanan}')">${r.noPesanan}</div><div class="text-[10px] text-gray-500 mt-0.5">Inv Data-2: ${r.invoiceD2 || '-'}</div><span class="inline-flex items-center px-2 py-0.5 mt-1 rounded text-[10px] font-medium bg-blue-100 text-blue-800">${r.kurirD1}</span></td><td class="px-4 py-3"><div class="text-xs text-gray-700">${r.statusD1}</div></td>
+                <td class="px-4 py-3"><div class="text-xs text-gray-600">${r.tglD1||'-'}</div></td><td class="px-4 py-3"><div class="text-xs text-gray-600">${r.tglD2||'-'}</div></td>`;
+                
+                if(curCompType==='BEDA_NOMINAL' || curCompType==='BATAL_DI_SHOPEE') {
+                    let txtColor = curCompType==='BATAL_DI_SHOPEE' ? 'text-red-600' : 'text-yellow-600';
+                    tr.innerHTML = com + `<td class="px-4 py-3 text-right font-medium">${formatRp(r.totalD1)}</td><td class="px-4 py-3 text-right font-medium">${formatRp(r.totalD2)}</td><td class="px-4 py-3 text-right font-bold ${txtColor}">${formatRp(r.selisih)}</td>`;
+                } else {
+                    tr.innerHTML = com + `<td class="px-4 py-3 text-right font-bold text-gray-900">${formatRp(r.totalD1)}</td>`;
+                }
 
                 let itH = `<div class="bg-blue-50 border border-blue-100 rounded-lg p-3 my-2"><table class="w-full text-xs text-left"><thead class="text-gray-600 border-b border-blue-200"><tr><th>Produk/SKU Data 1</th><th class="text-center">Qty</th><th class="text-right">Subtotal</th></tr></thead><tbody>`;
                 r.orderD1Data.items.forEach(it => { itH += `<tr class="border-b border-blue-100/50"><td class="py-1"><div>${it.namaProduk}</div><div class="text-[10px] text-gray-500">${it.sku}</div></td><td class="py-1 text-center">${it.qty}</td><td class="py-1 text-right font-medium">${formatRp(it.totalItem)}</td></tr>`; });
                 itH += `</tbody></table></div>`;
                 let trI = document.createElement('tr'); trI.id = `c_${r.noPesanan}`; trI.className = `hidden ${i%2===0?'bg-white':'bg-gray-50'} border-b`;
-                trI.innerHTML = `<td colspan="${curCompType==='BEDA_NOMINAL'?6:4}" class="px-8 pb-3 pt-0">${itH}</td>`;
+                trI.innerHTML = `<td colspan="${(curCompType==='BEDA_NOMINAL' || curCompType==='BATAL_DI_SHOPEE')?8:6}" class="px-8 pb-3 pt-0">${itH}</td>`;
                 tb.appendChild(tr); tb.appendChild(trI);
             });
             lucide.createIcons();
@@ -929,7 +958,7 @@
                 else if(curMainType==='VOC_TOKO') nom = o.vPenjual;
                 else if(curMainType==='VOC_PLATFORM') nom = currentPlatform==='TOKOPEDIA'?o.dPlat:o.vShopee;
 
-                let obj = { "No. Pesanan": o.noPesanan, "Resi": o.resi, "Status": o.status, "Alasan Batal": o.alasan, "Kurir": o.kurirAsli, "Nominal / Value (Rp)": nom };
+                let obj = { "No. Pesanan": o.noPesanan, "Tgl Platform": o.tglD1||"-", "Resi": o.resi, "Status": o.status, "Alasan Batal": o.alasan, "Kurir": o.kurirAsli, "Nominal / Value (Rp)": nom };
                 if (inc && o.items) {
                     o.items.forEach(it => { exp.push({ ...obj, "Nama Produk": it.namaProduk, "SKU": it.sku, "Qty": it.qty, "Subtotal Item": it.totalItem }); });
                 } else exp.push(obj);
@@ -944,8 +973,8 @@
             let f = compareData.filter(r=>r.tipe===curCompType && (r.noPesanan.toLowerCase().includes(s)||r.invoiceD2.toLowerCase().includes(s)) && (k==='ALL'||r.kurirD1===k) && (st==='ALL'||r.statusD1===st));
 
             f.forEach(r => {
-                let obj = { "No. Invoice (Data 2)": r.invoiceD2 || "-", "No. Pesanan": r.noPesanan, "Status Platform": r.statusD1, "Kurir": r.kurirD1 };
-                if(curCompType==='BEDA_NOMINAL') { obj["Nominal Data 1"] = r.totalD1; obj["Nominal Data 2"] = r.totalD2; obj["Selisih"] = r.selisih; } 
+                let obj = { "No. Invoice (Data 2)": r.invoiceD2 || "-", "No. Pesanan": r.noPesanan, "Status Platform": r.statusD1, "Kurir": r.kurirD1, "Tgl Platform": r.tglD1||"-", "Tgl Data 2": r.tglD2||"-" };
+                if(curCompType==='BEDA_NOMINAL' || curCompType==='BATAL_DI_SHOPEE') { obj["Nominal Data 1"] = r.totalD1; obj["Nominal Data 2"] = r.totalD2; obj["Selisih"] = r.selisih; } 
                 else { obj["Nominal Data 1"] = r.totalD1; obj["Nominal Data 2"] = r.totalD2; }
 
                 if (inc && r.orderD1Data && r.orderD1Data.items) {
