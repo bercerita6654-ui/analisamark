@@ -26,34 +26,57 @@
     <!-- SCREEN 1: UPLOAD SCREEN -->
     <div id="uploadScreen" class="min-h-screen flex flex-col items-center justify-center p-4">
         <div class="bg-white w-full max-w-lg shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
-            <div class="p-8 text-center border-b border-gray-50 bg-gradient-to-b from-blue-50 to-white">
-                <div class="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 shadow-sm">
-                    <i data-lucide="bar-chart-2" class="h-8 w-8 text-blue-600"></i>
+            <div id="headerBgArea" class="p-8 text-center border-b border-gray-50 bg-gradient-to-b from-orange-50 to-white transition-colors duration-500">
+                <div id="mainHeaderIconBg" class="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4 shadow-sm transition-colors duration-500">
+                    <i data-lucide="bar-chart-2" id="mainHeaderIcon" class="h-8 w-8 text-orange-600 transition-colors duration-500"></i>
                 </div>
                 <h1 class="text-2xl font-bold text-gray-800">Analitik Pesanan</h1>
-                <p class="text-gray-500 mt-2 text-sm">Unggah file Laporan Pesanan Shopee atau Tokopedia Anda (.xlsx / .csv)</p>
+                <p class="text-gray-500 mt-2 text-sm">Unggah file Laporan Pesanan Anda (.xlsx / .csv)</p>
             </div>
             <div class="p-8">
-                <!-- Dropdown Pilih Platform -->
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Pilih Platform:</label>
-                    <select id="platformSelect" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="SHOPEE">Shopee (Laporan Pesanan)</option>
-                        <option value="TOKOPEDIA">Tokopedia (Laporan Pesanan)</option>
-                    </select>
+                <!-- Dropdown Pilih Platform (Animasi Kartu) -->
+                <div class="mb-8">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3 text-center">Pilih Platform Laporan Anda:</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Shopee Button -->
+                        <div id="btnShopee" class="relative cursor-pointer rounded-xl border-2 p-4 text-center transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md group border-orange-500 bg-orange-50 text-orange-600 shadow-orange-100 shadow-lg ring-4 ring-orange-500/20">
+                            <div class="icon-bg mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-200 mb-2 transition-colors">
+                                <i data-lucide="shopping-bag" class="h-6 w-6 text-current"></i>
+                            </div>
+                            <div class="font-bold text-sm tracking-wide">Shopee</div>
+                            
+                            <!-- Active Checkmark -->
+                            <div id="checkShopee" class="absolute -top-2 -right-2 bg-orange-500 text-white rounded-full p-1 shadow-sm transition-transform duration-300">
+                                <i data-lucide="check" class="h-3 w-3"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Tokopedia Button -->
+                        <div id="btnTokopedia" class="relative cursor-pointer rounded-xl border-2 p-4 text-center transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md group border-gray-200 bg-white text-gray-500 hover:border-green-300 hover:bg-green-50">
+                            <div class="icon-bg mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 mb-2 group-hover:bg-green-100 transition-colors">
+                                <i data-lucide="store" class="h-6 w-6 text-current"></i>
+                            </div>
+                            <div class="font-bold text-sm tracking-wide">Tokopedia</div>
+
+                            <!-- Active Checkmark -->
+                            <div id="checkTokopedia" class="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1 shadow-sm hidden transition-transform duration-300">
+                                <i data-lucide="check" class="h-3 w-3"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <label for="fileInput" class="border-2 border-dashed border-blue-200 bg-blue-50/50 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:bg-blue-50 transition-colors cursor-pointer relative">
+                <label for="fileInput" id="uploadBox" class="border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center transition-all duration-300 cursor-pointer relative border-orange-200 bg-orange-50/50 hover:bg-orange-50">
                     <input type="file" id="fileInput" accept=".xlsx, .xls, .csv" class="hidden" />
                     
-                    <div id="uploadState" class="flex flex-col items-center">
-                        <i data-lucide="upload-cloud" class="h-10 w-10 text-blue-400 mb-3"></i>
-                        <p class="text-sm font-medium text-gray-700">Klik untuk memilih file</p>
+                    <div id="uploadState" class="flex flex-col items-center transition-all duration-300">
+                        <i data-lucide="upload-cloud" id="uploadCloudIcon" class="h-10 w-10 mb-3 text-orange-400 transition-colors duration-300"></i>
+                        <p class="text-sm font-semibold text-gray-700">Klik untuk memilih file</p>
                         <p class="text-xs text-gray-500 mt-1">Mendukung format Excel / CSV</p>
                     </div>
 
                     <div id="loadingState" class="hidden flex-col items-center">
-                        <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <div class="w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
                         <p class="text-sm font-medium text-gray-600">Membaca data...</p>
                     </div>
                 </label>
@@ -518,6 +541,55 @@
         let compareResults = [];
         let currentCompareType = '';
 
+        /* --- UI PLATFORM SELECTION --- */
+        const btnShopee = document.getElementById('btnShopee');
+        const btnTokopedia = document.getElementById('btnTokopedia');
+        const checkShopee = document.getElementById('checkShopee');
+        const checkTokopedia = document.getElementById('checkTokopedia');
+        const uploadBox = document.getElementById('uploadBox');
+        const mainHeaderIconBg = document.getElementById('mainHeaderIconBg');
+        const mainHeaderIcon = document.getElementById('mainHeaderIcon');
+        const uploadCloudIcon = document.getElementById('uploadCloudIcon');
+        const headerBgArea = document.getElementById('headerBgArea');
+
+        function updatePlatformUI() {
+            const baseClass = "relative cursor-pointer rounded-xl border-2 p-4 text-center transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md group ";
+            if (platformMode === 'SHOPEE') {
+                btnShopee.className = baseClass + "border-orange-500 bg-orange-50 text-orange-600 shadow-orange-100 shadow-lg ring-4 ring-orange-500/20";
+                btnShopee.querySelector('.icon-bg').className = "icon-bg mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-200 mb-2 transition-colors";
+                checkShopee.classList.remove('hidden');
+
+                btnTokopedia.className = baseClass + "border-gray-200 bg-white text-gray-500 hover:border-green-300 hover:bg-green-50";
+                btnTokopedia.querySelector('.icon-bg').className = "icon-bg mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 mb-2 group-hover:bg-green-100 transition-colors";
+                checkTokopedia.classList.add('hidden');
+
+                headerBgArea.className = "p-8 text-center border-b border-gray-50 bg-gradient-to-b from-orange-50 to-white transition-colors duration-500";
+                mainHeaderIconBg.className = "mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-sm bg-orange-100 transition-colors duration-500";
+                mainHeaderIcon.classList.remove('text-green-600'); mainHeaderIcon.classList.add('text-orange-600');
+                
+                uploadBox.className = "border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center transition-colors cursor-pointer relative border-orange-200 bg-orange-50/50 hover:bg-orange-50";
+                uploadCloudIcon.classList.remove('text-green-400'); uploadCloudIcon.classList.add('text-orange-400');
+            } else {
+                btnTokopedia.className = baseClass + "border-green-500 bg-green-50 text-green-600 shadow-green-100 shadow-lg ring-4 ring-green-500/20";
+                btnTokopedia.querySelector('.icon-bg').className = "icon-bg mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-200 mb-2 transition-colors";
+                checkTokopedia.classList.remove('hidden');
+
+                btnShopee.className = baseClass + "border-gray-200 bg-white text-gray-500 hover:border-orange-300 hover:bg-orange-50";
+                btnShopee.querySelector('.icon-bg').className = "icon-bg mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 mb-2 group-hover:bg-orange-100 transition-colors";
+                checkShopee.classList.add('hidden');
+
+                headerBgArea.className = "p-8 text-center border-b border-gray-50 bg-gradient-to-b from-green-50 to-white transition-colors duration-500";
+                mainHeaderIconBg.className = "mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-sm bg-green-100 transition-colors duration-500";
+                mainHeaderIcon.classList.remove('text-orange-600'); mainHeaderIcon.classList.add('text-green-600');
+                
+                uploadBox.className = "border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center transition-colors cursor-pointer relative border-green-200 bg-green-50/50 hover:bg-green-50";
+                uploadCloudIcon.classList.remove('text-orange-400'); uploadCloudIcon.classList.add('text-green-400');
+            }
+        }
+
+        btnShopee.addEventListener('click', () => { platformMode = 'SHOPEE'; updatePlatformUI(); });
+        btnTokopedia.addEventListener('click', () => { platformMode = 'TOKOPEDIA'; updatePlatformUI(); });
+
         /* --- UTILS --- */
         const formatRp = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
         const parseNum = (val) => {
@@ -534,8 +606,6 @@
         };
 
         /* --- FILE READING --- */
-        document.getElementById('platformSelect').addEventListener('change', (e) => { platformMode = e.target.value; });
-
         const readExcel = (file) => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
