@@ -188,11 +188,11 @@
                         <h3 id="compareTitle" class="text-lg font-bold flex items-center gap-2">
                             <i data-lucide="git-compare" class="h-5 w-5"></i> Rekonsiliasi Data
                         </h3>
-                        <p class="text-sm mt-1">Unggah file Data-2 (.xlsx) untuk mencocokkan No. Invoice/Pesanan & Nominal.</p>
+                        <p class="text-sm mt-1">Unggah file Data AIO (.xlsx) untuk mencocokkan No. Invoice/Pesanan & Nominal.</p>
                     </div>
                     <div>
                         <label id="btnUploadCompare" for="excelFileCompare" class="text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer flex items-center gap-2">
-                            <i data-lucide="upload" class="h-4 w-4"></i> Unggah Data 2
+                            <i data-lucide="upload" class="h-4 w-4"></i> Unggah Data AIO
                         </label>
                         <input type="file" id="excelFileCompare" accept=".xlsx, .xls" class="hidden" />
                     </div>
@@ -206,7 +206,7 @@
                 <div id="compareResultsArea" class="hidden-section">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                         <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                            <div class="text-sm text-gray-500 mb-1">Total Data 2</div>
+                            <div class="text-sm text-gray-500 mb-1">Total Data AIO</div>
                             <div id="compTotal" class="text-xl font-bold text-gray-900">0</div>
                         </div>
                         <div id="cardCompSesuai" class="bg-green-50 p-4 rounded-xl border border-green-300 interactive-card cursor-pointer group">
@@ -889,8 +889,8 @@
 
             let head = document.getElementById('compModalHead');
             let platName = currentPlatform === 'TOKOPEDIA' ? 'Tokopedia' : 'Shopee';
-            head.innerHTML = `<th class="px-4 py-3 w-8"></th><th class="px-4 py-3">Pesanan</th><th class="px-4 py-3">Status ${platName}</th><th class="px-4 py-3">Tgl ${platName}</th><th class="px-4 py-3">Tgl Data 2</th>`;
-            if(type==='BEDA_NOMINAL' || type==='BATAL_DI_SHOPEE') head.innerHTML += `<th class="px-4 py-3 text-right">Data 1</th><th class="px-4 py-3 text-right">Data 2</th><th class="px-4 py-3 text-right">Selisih</th>`;
+            head.innerHTML = `<th class="px-4 py-3 w-8"></th><th class="px-4 py-3">Pesanan</th><th class="px-4 py-3">Status ${platName}</th><th class="px-4 py-3">Tgl ${platName}</th><th class="px-4 py-3">Tgl Data AIO</th>`;
+            if(type==='BEDA_NOMINAL' || type==='BATAL_DI_SHOPEE') head.innerHTML += `<th class="px-4 py-3 text-right">Data 1</th><th class="px-4 py-3 text-right">Data AIO</th><th class="px-4 py-3 text-right">Selisih</th>`;
             else head.innerHTML += `<th class="px-4 py-3 text-right">Nominal Data 1</th>`;
 
             applyCompFilters(); m.classList.remove('hidden'); lucide.createIcons();
@@ -905,7 +905,7 @@
             f.forEach((r, i) => {
                 let tr = document.createElement('tr'); tr.className = `${i%2===0?'bg-white':'bg-gray-50'} border-b hover:bg-blue-50 transition-colors`;
                 let com = `<td class="px-4 py-3 cursor-pointer text-blue-500" onclick="window.toggleRow('c_${r.noPesanan}')"><i data-lucide="chevron-down" class="w-4 h-4"></i></td>
-                <td class="px-4 py-3"><div class="font-bold text-gray-900 cursor-pointer" onclick="window.toggleRow('c_${r.noPesanan}')">${r.noPesanan}</div><div class="text-[10px] text-gray-500 mt-0.5">Inv Data-2: ${r.invoiceD2 || '-'}</div><span class="inline-flex items-center px-2 py-0.5 mt-1 rounded text-[10px] font-medium bg-blue-100 text-blue-800">${r.kurirD1}</span></td><td class="px-4 py-3"><div class="text-xs text-gray-700">${r.statusD1}</div></td>
+                <td class="px-4 py-3"><div class="font-bold text-gray-900 cursor-pointer" onclick="window.toggleRow('c_${r.noPesanan}')">${r.noPesanan}</div><div class="text-[10px] text-gray-500 mt-0.5">Inv Data AIO: ${r.invoiceD2 || '-'}</div><span class="inline-flex items-center px-2 py-0.5 mt-1 rounded text-[10px] font-medium bg-blue-100 text-blue-800">${r.kurirD1}</span></td><td class="px-4 py-3"><div class="text-xs text-gray-700">${r.statusD1}</div></td>
                 <td class="px-4 py-3"><div class="text-xs text-gray-600">${r.tglD1||'-'}</div></td><td class="px-4 py-3"><div class="text-xs text-gray-600">${r.tglD2||'-'}</div></td>`;
                 
                 if(curCompType==='BEDA_NOMINAL' || curCompType==='BATAL_DI_SHOPEE') {
@@ -973,9 +973,9 @@
             let f = compareData.filter(r=>r.tipe===curCompType && (r.noPesanan.toLowerCase().includes(s)||r.invoiceD2.toLowerCase().includes(s)) && (k==='ALL'||r.kurirD1===k) && (st==='ALL'||r.statusD1===st));
 
             f.forEach(r => {
-                let obj = { "No. Invoice (Data 2)": r.invoiceD2 || "-", "No. Pesanan": r.noPesanan, "Status Platform": r.statusD1, "Kurir": r.kurirD1, "Tgl Platform": r.tglD1||"-", "Tgl Data 2": r.tglD2||"-" };
-                if(curCompType==='BEDA_NOMINAL' || curCompType==='BATAL_DI_SHOPEE') { obj["Nominal Data 1"] = r.totalD1; obj["Nominal Data 2"] = r.totalD2; obj["Selisih"] = r.selisih; } 
-                else { obj["Nominal Data 1"] = r.totalD1; obj["Nominal Data 2"] = r.totalD2; }
+                let obj = { "No. Invoice (Data AIO)": r.invoiceD2 || "-", "No. Pesanan": r.noPesanan, "Status Platform": r.statusD1, "Kurir": r.kurirD1, "Tgl Platform": r.tglD1||"-", "Tgl Data AIO": r.tglD2||"-" };
+                if(curCompType==='BEDA_NOMINAL' || curCompType==='BATAL_DI_SHOPEE') { obj["Nominal Data 1"] = r.totalD1; obj["Nominal Data AIO"] = r.totalD2; obj["Selisih"] = r.selisih; } 
+                else { obj["Nominal Data 1"] = r.totalD1; obj["Nominal Data AIO"] = r.totalD2; }
 
                 if (inc && r.orderD1Data && r.orderD1Data.items) {
                     r.orderD1Data.items.forEach(it => { exp.push({ ...obj, "Nama Produk": it.namaProduk, "SKU": it.sku, "Qty": it.qty, "Subtotal (Rp)": it.totalItem }); });
