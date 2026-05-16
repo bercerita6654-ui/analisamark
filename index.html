@@ -454,13 +454,13 @@
             setupCompareUI('orange');
             ui.upload.classList.add('hidden-section'); ui.dash.classList.remove('hidden-section');
         }
-
+        // PROCESS TOKOPEDIA
         function processTokopedia(rawJson, fileName) {
             rawOrders.clear();
             for(let i=1; i<rawJson.length; i++){
                 const row = rawJson[i]; if(!row || row.length<5) continue;
                 const noPesanan = cleanStr(row[0]), invoice = cleanStr(row[62]);
-                const id = invoice || noPesanan; if(!id) continue;
+                const id = noPesanan || invoice; if(!id) continue;
                 
                 const status = cleanStr(row[1]), alasan = cleanStr(row[36])||'-', resi = cleanStr(row[39])||'-';
                 const kurirAsli = cleanStr(row[41])||'-', namaProduk = cleanStr(row[7])||'-';
@@ -604,28 +604,28 @@
                 
                 for(let i=1; i<raw.length; i++){
                     if(!raw[i] || raw[i].length<5) continue;
-                    let noD2 = cleanStr(raw[i][2]).replace(/ONLINE (SHOPEE|TOKOPEDIA)\s*/i, ''); if(!noD2) continue;
-                    let nomD2 = parseNum(raw[i][4]); tot2++;
+                    let noD2 = cleanStr(raw[i][2]); if(!noD2) continue; // Kolom C = index 2
+                    let nomD2 = parseNum(raw[i][4]); // Kolom E = index 4
+                    tot2++;
 
-                    if(rawOrders.has(noD2) && !checked.has(noD2)){
-                        checked.add(noD2); let oD1 = rawOrders.get(noD2);
-                        let nomD1 = oD1.totJual, statLow = oD1.status.toLowerCase(), tipe='';
-                        if(statLow.includes('batal')||statLow.includes('cancel')) { tipe='BATAL_DI_SHOPEE'; btl++; }
-                        else if(nomD1 === nomD2) { tipe='SESUAI'; match++; }
-                        else { tipe='BEDA_NOMINAL'; diff++; }
-                        compareData.push({noPesanan: noD2, totalD2: nomD2, totalD1: nomD1, selisih: Math.abs(nomD1-nomD2), statusD1: oD1.status, kurirD1: oD1.kurirNormal, tipe, orderD1Data: oD1});
+                    let cleanNoD2 = noD2;
+                    if (currentPlatform === 'SHOPEE') {
+                        cleanNoD2 = noD2.replace(/ONLINE SHOPEE\s*/i, '').trim();
+                    } else if (currentPlatform === 'TOKOPEDIA') {
+                        // Mengekstrak angka setelah "TP-" (contoh: TP-583781368081647331-102567 -> 583781368081647331)
+                        let tpMatch = noD2.match(/TP-(\d+)/i);
+                        if (tpMatch) {
+                            cleanNoD2 = tpMatch[1];
+                        } else {
+                            // Fallback cadangan: Cari deretan angka panjang (>15 digit)
+                            let numMatch = noD2.match(/\d{15,}/);
+                            if (numMatch) cleanNoD2 = numMatch[0];
+                            else cleanNoD2 = noD2.replace(/.*TOKOPEDIA.*\s*/i, '').trim();
+                        }
                     }
-                }
-                document.getElementById('compTotal').textContent = tot2; document.getElementById('compSesuai').textContent = match;
-                document.getElementById('compDiff').textContent = diff; document.getElementById('compBatal').textContent = btl;
-                document.getElementById('compareResultsArea').classList.remove('hidden-section');
-                document.getElementById('compareLoadingState').classList.add('hidden');
-            };
-            reader.readAsArrayBuffer(file);
-        });
 
-        // Event listener globals for Compare cards
-        document.getElementById('cardCompSesuai').onclick = () => openCompareModal('SESUAI', 'green', 'Pesanan Sesuai Nominal', 'check-circle-2');
+                    if(rawOrders.has(cleanNoD2) && !checked.has(cleanNoD2)){
+                        checked.add(cleanNoD2); let oD1 = rawOrders.get(cleanNoD2);
         document.getElementById('cardCompDiff').onclick = () => openCompareModal('BEDA_NOMINAL', 'yellow', 'Rincian Beda Nominal', 'alert-triangle');
         document.getElementById('cardCompBatal').onclick = () => openCompareModal('BATAL_DI_SHOPEE', 'red', 'Batal di Platform', 'x-circle');
 
