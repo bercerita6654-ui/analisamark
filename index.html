@@ -106,7 +106,7 @@
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900">Alasan Pembatalan Terbanyak</h3>
                             <p class="text-sm text-gray-500 flex items-center gap-1">
-                                <i data-lucide="mouse-pointer-click" class="w-3 h-3"></i> Klik bar diagram untuk melihat pesanan
+                                <i data-lucide="mouse-pointer-click" class="w-3 h-3"></i> Klik bar diagram untuk memfilter
                             </p>
                         </div>
                         <select id="toggleChartMode" class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded focus:ring-blue-500 p-1">
@@ -203,17 +203,17 @@
                     </div>
                     
                     <div class="mt-4 flex flex-wrap gap-3 items-center">
-                        <input type="text" id="mainModalSearch" class="flex-grow bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5" placeholder="Cari No. Pesanan / Resi...">
-                        <select id="mainModalKurir" class="bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5"><option value="ALL">Semua Kurir</option></select>
-                        <select id="mainModalAlasan" class="hidden bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5"><option value="ALL">Semua Alasan</option></select>
-                        <select id="mainModalSort" class="bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5">
+                        <input type="text" id="mainModalSearch" class="flex-grow bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5 min-w-[200px]" placeholder="Cari No. Pesanan / Resi...">
+                        <select id="mainModalKurir" class="bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5 flex-shrink-0"><option value="ALL">Semua Kurir</option></select>
+                        <select id="mainModalAlasan" class="hidden bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5 flex-shrink-0"><option value="ALL">Semua Alasan</option></select>
+                        <select id="mainModalSort" class="bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5 flex-shrink-0">
                             <option value="DESC">Nominal Terbesar</option><option value="ASC">Nominal Terkecil</option>
                         </select>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 flex-shrink-0">
                             <input type="checkbox" id="exportMainItems" class="w-4 h-4 text-blue-600 rounded" checked>
                             <label class="text-sm text-gray-700 cursor-pointer">Rincian Produk</label>
                         </div>
-                        <button id="btnExportMain" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Excel</button>
+                        <button id="btnExportMain" class="flex-shrink-0 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Excel</button>
                     </div>
                 </div>
                 <div class="bg-gray-50 modal-body overflow-y-auto max-h-[60vh]">
@@ -243,14 +243,14 @@
                         <button id="closeCompareBtn" class="mt-3 w-full sm:mt-0 sm:w-auto inline-flex justify-center rounded-md border border-gray-300 px-4 py-2 bg-white text-sm font-medium hover:bg-gray-50">Tutup</button>
                     </div>
                     <div class="mt-4 flex flex-wrap gap-3 items-center">
-                        <input type="text" id="compModalSearch" class="flex-grow bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5" placeholder="Cari No. Pesanan...">
-                        <select id="compModalStatus" class="bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5"><option value="ALL">Semua Status</option></select>
-                        <select id="compModalKurir" class="bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5"><option value="ALL">Semua Kurir</option></select>
-                        <div class="flex items-center gap-2">
+                        <input type="text" id="compModalSearch" class="flex-grow bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5 min-w-[200px]" placeholder="Cari No. Pesanan...">
+                        <select id="compModalStatus" class="bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5 flex-shrink-0"><option value="ALL">Semua Status</option></select>
+                        <select id="compModalKurir" class="bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5 flex-shrink-0"><option value="ALL">Semua Kurir</option></select>
+                        <div class="flex items-center gap-2 flex-shrink-0">
                             <input type="checkbox" id="exportCompItems" class="w-4 h-4 text-blue-600 rounded" checked>
                             <label class="text-sm text-gray-700 cursor-pointer">Rincian Produk</label>
                         </div>
-                        <button id="btnExportComp" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Excel</button>
+                        <button id="btnExportComp" class="flex-shrink-0 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Excel</button>
                     </div>
                 </div>
                 <div class="bg-gray-50 modal-body overflow-y-auto max-h-[60vh]">
@@ -271,7 +271,7 @@
         // GLOBALS
         let currentPlatform = ''; 
         let rawOrders = new Map(); // Unified storage
-        let lists = {}; // Holds categorised lists for active platform
+        let lists = {}; // Holds categorised lists
         let chartStatus = null, chartBatal = null;
         let compareData = [];
         let curMainType = '', curCompType = '';
@@ -279,12 +279,15 @@
 
         // UTILS
         const formatRp = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num || 0);
+        
         const parseNum = (val) => {
             if (typeof val === 'number') return val;
             if (!val) return 0;
             return parseFloat(val.toString().replace(/[^0-9-]/g, "")) || 0;
         };
+        
         const cleanStr = (val) => val ? val.toString().trim() : '';
+        
         const normKurir = (str) => {
             let s = cleanStr(str).toLowerCase();
             if(s.includes('instan')||s.includes('gojek')||s.includes('grab')) return 'Instan';
@@ -360,12 +363,14 @@
                 try {
                     const data = new Uint8Array(evt.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
+                    // Penting: raw=false agar angka 0 di depan (seperti resi) tidak hilang
                     const rawJson = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1, raw: false, defval: "" });
                     
                     if(currentPlatform === 'SHOPEE') processShopee(rawJson, file.name);
                     else processTokopedia(rawJson, file.name);
                 } catch (err) {
                     showError("Gagal membaca file Excel. Pastikan format kolom sesuai.");
+                    console.error(err);
                 } finally {
                     ui.upState.classList.remove('hidden'); ui.loadState.classList.add('hidden'); ui.loadState.classList.remove('flex');
                 }
@@ -408,8 +413,7 @@
             ui.dashHdr.className = "flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-orange-500";
             ui.dashIcon.className = "h-7 w-7 text-orange-500"; ui.dashTitle.textContent = "Analisis Pesanan Shopee";
             
-            let lSelesai=[], lBatal=[], lProses=[], lDiskonToko=[], lVocToko=[], lVocShopee=[]; // VOC shopee excluded in 49 col parsing, ignoring for now or mapping if exist. 
-            // Correct mapping for UI:
+            let lSelesai=[], lBatal=[], lProses=[], lDiskonToko=[], lVocToko=[], lVocShopee=[];
             let lOngkirP=[], lPotOngkir=[], lOngkirR=[], lTotBayar=[], lPerkOngkir=[];
             let rpSelesai=0, rpBatal=0, rpDiskon=0, rpVoc=0;
             globalAlasanMap.clear(); const kurirMap = new Map();
@@ -433,7 +437,6 @@
             lists = { SELESAI: lSelesai, BATAL: lBatal, PROSES: lProses, DISKON_TOKO: lDiskonToko, VOC_TOKO: lVocToko, ALL_KURIR: Array.from(rawOrders.values()),
                       ONG_P: lOngkirP, POT_O: lPotOngkir, ONG_R: lOngkirR, TOT_B: lTotBayar, PERK_O: lPerkOngkir };
 
-            // Render Metrics
             ui.metrics.innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                     ${genCard('SELESAI', 'Total Selesai', rpSelesai, lSelesai.length+' Pesanan', 'green', 'check-circle-2')}
@@ -454,7 +457,7 @@
             setupCompareUI('orange');
             ui.upload.classList.add('hidden-section'); ui.dash.classList.remove('hidden-section');
         }
-        // PROCESS TOKOPEDIA
+
         function processTokopedia(rawJson, fileName) {
             rawOrders.clear();
             for(let i=1; i<rawJson.length; i++){
@@ -597,44 +600,67 @@
             const file = e.target.files[0]; if(!file) return;
             document.getElementById('compareLoadingState').classList.remove('hidden');
             const reader = new FileReader();
+            
             reader.onload = (evt) => {
-                const data = new Uint8Array(evt.target.result);
-                const raw = XLSX.utils.sheet_to_json(XLSX.read(data, {type:'array'}).Sheets[XLSX.read(data, {type:'array'}).SheetNames[0]], {header:1, raw:false, defval:""});
-                compareData = []; let match=0, diff=0, btl=0, tot2=0; let checked = new Set();
-                
-                for(let i=1; i<raw.length; i++){
-                    if(!raw[i] || raw[i].length<5) continue;
-                    let noD2 = cleanStr(raw[i][2]); if(!noD2) continue; // Kolom C = index 2
-                    let nomD2 = parseNum(raw[i][4]); // Kolom E = index 4
-                    tot2++;
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const raw = XLSX.utils.sheet_to_json(XLSX.read(data, {type:'array'}).Sheets[XLSX.read(data, {type:'array'}).SheetNames[0]], {header:1, raw:false, defval:""});
+                    compareData = []; let match=0, diff=0, btl=0, tot2=0; let checked = new Set();
+                    
+                    for(let i=1; i<raw.length; i++){
+                        if(!raw[i] || raw[i].length<5) continue;
+                        let invoiceD2 = cleanStr(raw[i][0]);
+                        let noD2 = cleanStr(raw[i][2]);
+                        let nomD2 = parseNum(raw[i][4]);
+                        tot2++;
 
-                    let cleanNoD2 = noD2;
-                    if (currentPlatform === 'SHOPEE') {
-                        cleanNoD2 = noD2.replace(/ONLINE SHOPEE\s*/i, '').trim();
-                    } else if (currentPlatform === 'TOKOPEDIA') {
-                        // Mengekstrak angka setelah "TP-" (contoh: TP-583781368081647331-102567 -> 583781368081647331)
-                        let tpMatch = noD2.match(/TP-(\d+)/i);
-                        if (tpMatch) {
-                            cleanNoD2 = tpMatch[1];
-                        } else {
-                            // Fallback cadangan: Cari deretan angka panjang (>15 digit)
-                            let numMatch = noD2.match(/\d{15,}/);
-                            if (numMatch) cleanNoD2 = numMatch[0];
-                            else cleanNoD2 = noD2.replace(/.*TOKOPEDIA.*\s*/i, '').trim();
+                        let cleanNoD2 = noD2;
+                        if (currentPlatform === 'SHOPEE') {
+                            cleanNoD2 = noD2.replace(/ONLINE SHOPEE\s*/i, '').trim();
+                        } else if (currentPlatform === 'TOKOPEDIA') {
+                            let tpMatch = noD2.match(/TP-(\d+)/i);
+                            if (tpMatch) cleanNoD2 = tpMatch[1];
+                            else {
+                                let numMatch = noD2.match(/\d{15,}/);
+                                if (numMatch) cleanNoD2 = numMatch[0];
+                                else cleanNoD2 = noD2.replace(/.*TOKOPEDIA.*\s*/i, '').trim();
+                            }
+                        }
+
+                        if(rawOrders.has(cleanNoD2) && !checked.has(cleanNoD2)){
+                            checked.add(cleanNoD2); let oD1 = rawOrders.get(cleanNoD2);
+                            let isBatal = oD1.status.toLowerCase().includes('batal') || oD1.status.toLowerCase().includes('cancel');
+                            let isDiff = Math.abs(oD1.totJual - nomD2) > 100;
+
+                            if(isBatal){
+                                btl++; compareData.push({tipe:'BATAL_DI_SHOPEE', noPesanan: cleanNoD2, invoiceD2, totalD1: oD1.totJual, totalD2: nomD2, selisih: nomD2 - oD1.totJual, statusD1: oD1.status, kurirD1: oD1.kurirNormal, orderD1Data: oD1});
+                            } else if(isDiff){
+                                diff++; compareData.push({tipe:'BEDA_NOMINAL', noPesanan: cleanNoD2, invoiceD2, totalD1: oD1.totJual, totalD2: nomD2, selisih: Math.abs(oD1.totJual - nomD2), statusD1: oD1.status, kurirD1: oD1.kurirNormal, orderD1Data: oD1});
+                            } else {
+                                match++; compareData.push({tipe:'SESUAI', noPesanan: cleanNoD2, invoiceD2, totalD1: oD1.totJual, totalD2: nomD2, selisih: 0, statusD1: oD1.status, kurirD1: oD1.kurirNormal, orderD1Data: oD1});
+                            }
                         }
                     }
+                    document.getElementById('compTotal').textContent = tot2;
+                    document.getElementById('compSesuai').textContent = match;
+                    document.getElementById('compDiff').textContent = diff;
+                    document.getElementById('compBatal').textContent = btl;
+                    document.getElementById('compareResultsArea').classList.remove('hidden-section');
+                } catch(err) {
+                    alert('Gagal memproses file komparasi.');
+                } finally {
+                    document.getElementById('compareLoadingState').classList.add('hidden');
+                    document.getElementById('excelFileCompare').value = '';
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
 
-                    if(rawOrders.has(cleanNoD2) && !checked.has(cleanNoD2)){
-                        checked.add(cleanNoD2); let oD1 = rawOrders.get(cleanNoD2);
-        document.getElementById('cardCompDiff').onclick = () => openCompareModal('BEDA_NOMINAL', 'yellow', 'Rincian Beda Nominal', 'alert-triangle');
-        document.getElementById('cardCompBatal').onclick = () => openCompareModal('BATAL_DI_SHOPEE', 'red', 'Batal di Platform', 'x-circle');
-
-        function openMainModal(type, forceKurir=null, forceAlasan=null) {
-            curMainType = type;
-            const m = document.getElementById('mainModal');
-            document.getElementById('mainModalSearch').value = '';
+        // MODALS
+        function openMainModal(type, forceKurir = null, forceAlasan = null) {
+            curMainType = type; const m = document.getElementById('mainModal');
+            let list = lists[type] || []; if(type==='ALL_KURIR') list = lists.ALL_KURIR;
             
-            let list = lists[type] || [];
             let icon = 'list', col = 'blue', t = 'Daftar Pesanan', hdr = 'Status';
             
             if(type==='SELESAI'){ icon='check'; col='green'; t='Pesanan Selesai'; }
@@ -671,12 +697,10 @@
             const sort = document.getElementById('mainModalSort').value;
             const al = document.getElementById('mainModalAlasan').value;
 
-            let list = lists[curMainType] || [];
-            if(curMainType==='ALL_KURIR') list = lists.ALL_KURIR;
+            let list = lists[curMainType] || []; if(curMainType==='ALL_KURIR') list = lists.ALL_KURIR;
 
             let f = list.filter(o => (o.noPesanan.toLowerCase().includes(s)||o.resi.toLowerCase().includes(s)) && (k==='ALL'||o.kurirNormal===k) && (curMainType!=='BATAL'||al==='ALL'||o.alasan===al));
-            
-            f.sort((a,b) => sort==='DESC'?b.totJual-a.totJual:a.totJual-b.totJual); // Simplification: sort by totJual mostly
+            f.sort((a,b) => sort==='DESC'?b.totJual-a.totJual:a.totJual-b.totJual);
 
             f.forEach((o, i) => {
                 let dyn = `<div class="text-xs text-gray-700">${o.status}</div>`;
@@ -714,7 +738,7 @@
             [...new Set(f.map(i=>i.kurirD1))].forEach(k=>krSel.appendChild(new Option(k,k)));
 
             let head = document.getElementById('compModalHead');
-            head.innerHTML = `<th class="px-4 py-3 w-8"></th><th class="px-4 py-3">Pesanan</th><th class="px-4 py-3">Status</th>`;
+            head.innerHTML = `<th class="px-4 py-3 w-8"></th><th class="px-4 py-3">Pesanan</th><th class="px-4 py-3">Status Shopee</th>`;
             if(type==='BEDA_NOMINAL') head.innerHTML += `<th class="px-4 py-3 text-right">Data 1</th><th class="px-4 py-3 text-right">Data 2</th><th class="px-4 py-3 text-right">Selisih</th>`;
             else head.innerHTML += `<th class="px-4 py-3 text-right">Nominal Data 1</th>`;
 
@@ -730,7 +754,7 @@
             f.forEach((r, i) => {
                 let tr = document.createElement('tr'); tr.className = `${i%2===0?'bg-white':'bg-gray-50'} border-b`;
                 let com = `<td class="px-4 py-3 cursor-pointer text-blue-500" onclick="toggleRow('c_${r.noPesanan}')"><i data-lucide="chevron-down" class="w-4 h-4"></i></td>
-                <td class="px-4 py-3"><div class="font-bold text-gray-900 cursor-pointer" onclick="toggleRow('c_${r.noPesanan}')">${r.noPesanan}</div><span class="inline-flex items-center px-2 py-0.5 mt-1 rounded text-[10px] font-medium bg-blue-100 text-blue-800">${r.kurirD1}</span></td><td class="px-4 py-3"><div class="text-xs text-gray-700">${r.statusD1}</div></td>`;
+                <td class="px-4 py-3"><div class="font-bold text-gray-900 cursor-pointer" onclick="toggleRow('c_${r.noPesanan}')">${r.noPesanan}</div><div class="text-[10px] text-gray-500 mt-0.5">Inv: ${r.invoiceD2 || '-'}</div><span class="inline-flex items-center px-2 py-0.5 mt-1 rounded text-[10px] font-medium bg-blue-100 text-blue-800">${r.kurirD1}</span></td><td class="px-4 py-3"><div class="text-xs text-gray-700">${r.statusD1}</div></td>`;
                 if(curCompType==='BEDA_NOMINAL') tr.innerHTML = com + `<td class="px-4 py-3 text-right font-medium">${formatRp(r.totalD1)}</td><td class="px-4 py-3 text-right font-medium">${formatRp(r.totalD2)}</td><td class="px-4 py-3 text-right font-bold text-yellow-600">${formatRp(r.selisih)}</td>`;
                 else tr.innerHTML = com + `<td class="px-4 py-3 text-right font-bold text-gray-900">${formatRp(r.totalD1)}</td>`;
 
@@ -753,31 +777,47 @@
         const closeComp = () => document.getElementById('compareModal').classList.add('hidden');
         document.getElementById('closeCompareBtn').onclick = closeComp; document.getElementById('closeCompareOverlay').onclick = closeComp;
 
+        // Wire Up Compare Cards
+        document.getElementById('cardCompSesuai').onclick = () => openCompareModal('SESUAI', 'green', 'Sesuai Nominal', 'check-circle-2');
+        document.getElementById('cardCompDiff').onclick = () => openCompareModal('BEDA_NOMINAL', 'yellow', 'Beda Nominal', 'alert-triangle');
+        document.getElementById('cardCompBatal').onclick = () => openCompareModal('BATAL_DI_SHOPEE', 'red', 'Batal di Shopee', 'x-circle');
+
         // EXPORT
         function downloadXLSX(data, fn) {
             const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Data"); XLSX.writeFile(wb, fn+".xlsx");
         }
+        
         document.getElementById('btnExportMain').onclick = () => {
             const inc = document.getElementById('exportMainItems').checked;
             const exp = [];
-            document.querySelectorAll('#mainModalTableBody tr:not(.hidden)').forEach((tr, idx) => {
-                if(idx%2!==0) return; // skip item rows
-                const cells = tr.querySelectorAll('td'); if(cells.length<4) return;
-                let obj = { "No. Pesanan": cells[1].querySelector('div').innerText, "Status": cells[2].innerText, "Nominal (Rp)": parseNum(cells[3].innerText) };
-                exp.push(obj); // simplified export
+            const s = document.getElementById('mainModalSearch').value.toLowerCase(), k = document.getElementById('mainModalKurir').value, al = document.getElementById('mainModalAlasan').value;
+            let list = lists[curMainType] || []; if(curMainType==='ALL_KURIR') list = lists.ALL_KURIR;
+            let f = list.filter(o => (o.noPesanan.toLowerCase().includes(s)||o.resi.toLowerCase().includes(s)) && (k==='ALL'||o.kurirNormal===k) && (curMainType!=='BATAL'||al==='ALL'||o.alasan===al));
+
+            f.forEach(o => {
+                let obj = { "No. Pesanan": o.noPesanan, "Resi": o.resi, "Status": o.status, "Alasan": o.alasan, "Kurir": o.kurirAsli, "Nominal": o.totJual };
+                if (inc && o.items) {
+                    o.items.forEach(it => { exp.push({ ...obj, "Nama Produk": it.namaProduk, "SKU": it.sku, "Qty": it.qty, "Subtotal": it.totalItem }); });
+                } else exp.push(obj);
             });
             downloadXLSX(exp, `Ekspor_${curMainType}`);
         };
+
         document.getElementById('btnExportComp').onclick = () => {
+            const inc = document.getElementById('exportCompItems').checked;
             const exp = [];
-            document.querySelectorAll('#compModalBody tr:not(.hidden)').forEach((tr, idx) => {
-                if(idx%2!==0) return;
-                const cells = tr.querySelectorAll('td'); if(cells.length<4) return;
-                let obj = { "No. Pesanan": cells[1].querySelector('div').innerText, "Status": cells[2].innerText };
-                if(curCompType==='BEDA_NOMINAL') { obj["Data 1"]=parseNum(cells[3].innerText); obj["Data 2"]=parseNum(cells[4].innerText); obj["Selisih"]=parseNum(cells[5].innerText); }
-                else obj["Nominal Data 1"] = parseNum(cells[3].innerText);
-                exp.push(obj);
+            const s = document.getElementById('compModalSearch').value.toLowerCase(), k = document.getElementById('compModalKurir').value, st = document.getElementById('compModalStatus').value;
+            let f = compareData.filter(r=>r.tipe===curCompType && r.noPesanan.toLowerCase().includes(s) && (k==='ALL'||r.kurirD1===k) && (st==='ALL'||r.statusD1===st));
+
+            f.forEach(r => {
+                let obj = { "No. Invoice (Data 2)": r.invoiceD2 || "-", "No. Pesanan": r.noPesanan, "Status Platform": r.statusD1, "Kurir": r.kurirD1 };
+                if(curCompType==='BEDA_NOMINAL') { obj["Nominal Data 1"] = r.totalD1; obj["Nominal Data 2"] = r.totalD2; obj["Selisih"] = r.selisih; } 
+                else { obj["Nominal Data 1"] = r.totalD1; obj["Nominal Data 2"] = r.totalD2; }
+
+                if (inc && r.orderD1Data && r.orderD1Data.items) {
+                    r.orderD1Data.items.forEach(it => { exp.push({ ...obj, "Nama Produk": it.namaProduk, "SKU": it.sku, "Qty": it.qty, "Subtotal (Rp)": it.totalItem }); });
+                } else exp.push(obj);
             });
             downloadXLSX(exp, `Ekspor_Komparasi_${curCompType}`);
         };
