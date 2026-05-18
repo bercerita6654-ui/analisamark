@@ -1242,13 +1242,29 @@
         
         window.openCompareModal = function(type, colorClass, title, icon) {
             currentCompareType = type;
-            document.getElementById('compareModalTitle').textContent = title;
-            document.getElementById('thStatusPlatform').textContent = `Status ${platformMode}`;
+            
+            // Perbaikan: Buat ulang elemen judul & ikon agar bebas macet (SVG crash)
+            const titleContainer = document.getElementById('compareModalTitle').parentElement;
+            titleContainer.innerHTML = `
+                <i data-lucide="${icon}" class="h-6 w-6"></i>
+                <h2 id="compareModalTitle" class="text-xl font-bold">${title}</h2>
+            `;
+            
+            // Perbaikan: Susun ulang header tabel standar setiap kali modal dibuka
+            const thead = document.querySelector('#compareModal table thead tr');
+            thead.innerHTML = `
+                <th class="px-5 py-3">Tanggal AIO</th>
+                <th class="px-5 py-3">Tanggal Platform</th>
+                <th class="px-5 py-3">No. Pesanan / Inv</th>
+                <th class="px-5 py-3">Status ${platformMode}</th>
+                <th class="px-5 py-3 text-right">Data 1 (Platform)</th>
+                <th class="px-5 py-3 text-right">Data AIO</th>
+                <th class="px-5 py-3 text-right">Selisih</th>
+            `;
             
             const hdr = document.getElementById('compareModalHeader');
-            hdr.className = `px-6 py-4 flex justify-between items-center border-b text-white bg-${colorClass}-600`;
-            const iconEl = document.getElementById('compareModalIcon');
-            iconEl.setAttribute('data-lucide', icon);
+            hdr.className = `px-6 py-4 flex flex-wrap gap-4 justify-between items-center border-b text-white bg-${colorClass}-600`;
+            
             lucide.createIcons();
 
             const statusFilter = document.getElementById('compareModalStatusFilter');
@@ -1421,13 +1437,28 @@
             currentCompareType = 'EXTRA_VALIDATION'; 
             currentExtraFilterMode = filterMode;
             
-            document.getElementById('compareModalTitle').textContent = title;
-            document.getElementById('thStatusPlatform').textContent = `Status ${platformMode}`;
+            // Perbaikan: Buat ulang elemen judul & ikon
+            const titleContainer = document.getElementById('compareModalTitle').parentElement;
+            titleContainer.innerHTML = `
+                <i data-lucide="${icon}" class="h-6 w-6"></i>
+                <h2 id="compareModalTitle" class="text-xl font-bold">${title}</h2>
+            `;
+            
+            // Perbaikan: Susun header tabel Tokopedia Ekstra dengan aman di sini
+            const thead = document.querySelector('#compareModal table thead tr');
+            thead.innerHTML = `
+                <th class="px-5 py-3">Tanggal AIO</th>
+                <th class="px-5 py-3">No. Pesanan / Inv</th>
+                <th class="px-5 py-3">Status ${platformMode}</th>
+                <th class="px-5 py-3 text-right">Data AIO (D2)</th>
+                <th class="px-5 py-3 text-right">Data Validasi (D3)</th>
+                <th class="px-5 py-3 text-right">Selisih (D2 - D3)</th>
+                <th class="px-5 py-3 text-right">Status Validasi</th>
+            `;
             
             const hdr = document.getElementById('compareModalHeader');
             hdr.className = `px-6 py-4 flex flex-wrap gap-4 justify-between items-center border-b text-white bg-${colorClass}-600`;
-            const iconEl = document.getElementById('compareModalIcon');
-            iconEl.setAttribute('data-lucide', icon);
+            
             lucide.createIcons();
 
             const statusFilter = document.getElementById('compareModalStatusFilter');
@@ -1462,18 +1493,8 @@
             const statusF = document.getElementById('compareModalStatusFilter').value;
             const kurirF = document.getElementById('compareModalKurirFilter').value;
             const tbody = document.getElementById('compareModalTbody');
-            
-            const thead = document.querySelector('#compareModal table thead tr');
-            thead.innerHTML = `
-                <th class="px-5 py-3">Tanggal AIO</th>
-                <th class="px-5 py-3">No. Pesanan / Inv</th>
-                <th class="px-5 py-3">Status Platform</th>
-                <th class="px-5 py-3 text-right">Data AIO (D2)</th>
-                <th class="px-5 py-3 text-right">Data Validasi (D3)</th>
-                <th class="px-5 py-3 text-right">Selisih (D2 - D3)</th>
-                <th class="px-5 py-3 text-right">Status Validasi</th>
-            `;
 
+            // Header dimuat di fungsi openExtraModal agar aman dari looping error
             tbody.innerHTML = '';
 
             let filtered = compareExtraResults.filter(r => {
