@@ -773,11 +773,23 @@
             document.getElementById('dashIconBg').style.backgroundColor = themeLight;
             document.getElementById('dashIcon').style.color = themeColor;
             
+            const compareGridContainer = document.getElementById('cardCompDiff').parentElement;
+
             if(platformMode === 'TOKOPEDIA') {
                 document.getElementById('tokopediaExtraReconArea').classList.remove('hidden-section');
                 document.getElementById('compareExtraResultsArea').classList.add('hidden-section');
+                
+                // Sembunyikan Beda Nominal untuk Tokopedia dan sesuaikan grid menjadi 3 kolom
+                document.getElementById('cardCompDiff').classList.add('hidden-section');
+                compareGridContainer.classList.remove('md:grid-cols-4');
+                compareGridContainer.classList.add('md:grid-cols-3');
             } else {
                 document.getElementById('tokopediaExtraReconArea').classList.add('hidden-section');
+                
+                // Tampilkan kembali Beda Nominal untuk Shopee dan set grid menjadi 4 kolom
+                document.getElementById('cardCompDiff').classList.remove('hidden-section');
+                compareGridContainer.classList.remove('md:grid-cols-3');
+                compareGridContainer.classList.add('md:grid-cols-4');
             }
 
             globalListSelesai = []; globalListBatal = []; globalListProses = [];
