@@ -682,7 +682,7 @@
                 const tgl = status.toLowerCase().includes('cancel') ? tglCancelled : (tglDelivered || tglCreated || '-');
 
                 const namaProduk = cleanStr(row[7]);
-                const sku = cleanStr(row[6]) || cleanStr(row[5]); // SKU seller Col 7 > SKU platform Col 6
+                const sku = cleanStr(row[6]); // Secara spesifik dan ketat mengambil dari Kolom ke-7 (Index 6)
                 
                 const hargaAwalItem = parseNum(row[11]);
                 const qtyItem = parseNum(row[9]);
@@ -1166,11 +1166,25 @@
                 let tglAIO = cleanStr(row[1]);
                 let rawNo = cleanStr(row[2]);
                 
-                // Clean Data 2 No Pesanan to match Data 1
-                let cleanNo = rawNo.replace(/ONLINE\s+SHOPEE\s*/i, '')
-                                   .replace(/ONLINE\s+TIKTOK\s+TOKOPEDIA\s+BALIST\s+TP-/i, '')
-                                   .replace(/-\d+$/, '')
-                                   .trim();
+                // Clean Data AIO No Pesanan to match Data 1
+                let cleanNo = rawNo;
+
+                // 1. Bersihkan prefix Shopee
+                cleanNo = cleanNo.replace(/ONLINE\s+SHOPEE\s*/i, '');
+
+                // 2. Bersihkan format Tokopedia secara presisi
+                // Mencari format TP- diikuti angka. Contoh: "... TP-583795452321956949-102567"
+                let tpMatch = cleanNo.match(/TP-(\d+)/i);
+                if (tpMatch && tpMatch[1]) {
+                    // Jika ketemu TP-, ambil HANYA angka utamanya saja
+                    cleanNo = tpMatch[1];
+                } else {
+                    // Fallback: hapus semua tulisan yg mirip awalan tokopedia dan hapus akhiran strip angka (-1)
+                    cleanNo = cleanNo.replace(/ONLINE\s+.*TOKOPEDIA.*?(?=\d)/i, '')
+                                     .replace(/-\d+$/, '');
+                }
+                
+                cleanNo = cleanNo.trim();
                 if(!cleanNo) continue;
 
                 let nominalAIO = parseNum(row[4]);
