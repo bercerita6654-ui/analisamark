@@ -1169,19 +1169,24 @@
                 // Clean Data AIO No Pesanan to match Data 1
                 let cleanNo = rawNo;
 
-                // 1. Bersihkan prefix Shopee
-                cleanNo = cleanNo.replace(/ONLINE\s+SHOPEE\s*/i, '');
+                // 1. Bersihkan prefix Shopee (Menangani tambahan GOMART dan awalan SP-)
+                cleanNo = cleanNo.replace(/ONLINE\s+SHOPEE\s*(GOMART\s*)?(SP-)?/i, '');
 
-                // 2. Bersihkan format Tokopedia secara presisi
-                // Mencari format TP- diikuti angka. Contoh: "... TP-583795452321956949-102567"
+                // 2. Bersihkan format Tokopedia secara presisi (Menangani TOPED GOMALL, dll)
+                // Mencari format TP- diikuti angka
                 let tpMatch = cleanNo.match(/TP-(\d+)/i);
                 if (tpMatch && tpMatch[1]) {
-                    // Jika ketemu TP-, ambil HANYA angka utamanya saja
                     cleanNo = tpMatch[1];
                 } else {
-                    // Fallback: hapus semua tulisan yg mirip awalan tokopedia dan hapus akhiran strip angka (-1)
-                    cleanNo = cleanNo.replace(/ONLINE\s+.*TOKOPEDIA.*?(?=\d)/i, '')
-                                     .replace(/-\d+$/, '');
+                    // Coba deteksi deretan angka panjang (khas Order ID Tokopedia 15+ digit)
+                    let longNumMatch = cleanNo.match(/(\d{15,})/);
+                    if (longNumMatch && longNumMatch[1]) {
+                        cleanNo = longNumMatch[1];
+                    } else {
+                        // Fallback: hapus teks mirip awalan tokopedia dan akhiran strip angka
+                        cleanNo = cleanNo.replace(/ONLINE\s+.*?(TOKOPEDIA|TOPED).*?(?=\d)/i, '')
+                                         .replace(/-\d+$/, '');
+                    }
                 }
                 
                 cleanNo = cleanNo.trim();
