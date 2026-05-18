@@ -314,24 +314,24 @@
                 </div>
                 
                 <div id="compareExtraResultsArea" class="hidden-section p-5 bg-white">
-                     <div class="flex flex-col md:flex-row items-center gap-4 justify-between bg-yellow-50 p-4 rounded-xl border border-yellow-200">
-                         <div class="flex items-center gap-4">
-                             <div class="text-center px-4 border-r border-yellow-300">
-                                 <div class="text-xs text-yellow-600 font-bold uppercase">Total Validasi</div>
-                                 <div id="extraTotal" class="text-2xl font-bold text-yellow-800">0</div>
-                             </div>
-                             <div class="text-center px-4 border-r border-yellow-300">
-                                 <div class="text-xs text-green-600 font-bold uppercase">Berhasil Tervalidasi</div>
-                                 <div id="extraSesuai" class="text-2xl font-bold text-green-700">0</div>
-                             </div>
-                             <div class="text-center px-4">
-                                 <div class="text-xs text-red-600 font-bold uppercase">Sisa Beda Nominal</div>
-                                 <div id="extraDiff" class="text-2xl font-bold text-red-700">0</div>
-                             </div>
+                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                         <!-- Interaktif Card: Total Validasi -->
+                         <div id="cardExtraTotal" class="bg-yellow-50 p-4 rounded-xl border border-yellow-200 interactive-card cursor-pointer group text-center">
+                             <div class="text-xs text-yellow-600 font-bold uppercase mb-1 flex items-center justify-center gap-1">Total Validasi <i data-lucide="external-link" class="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity"></i></div>
+                             <div id="extraTotal" class="text-2xl font-bold text-yellow-800">0</div>
                          </div>
-                         <button id="btnViewExtraDiff" class="bg-white border border-yellow-400 hover:bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors flex items-center gap-2">
-                             <i data-lucide="eye" class="h-4 w-4"></i> Lihat Rincian Validasi
-                         </button>
+                         
+                         <!-- Interaktif Card: Berhasil Tervalidasi -->
+                         <div id="cardExtraSesuai" class="bg-green-50 p-4 rounded-xl border border-green-200 interactive-card cursor-pointer group text-center">
+                             <div class="text-xs text-green-600 font-bold uppercase mb-1 flex items-center justify-center gap-1">Berhasil Tervalidasi <i data-lucide="external-link" class="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity"></i></div>
+                             <div id="extraSesuai" class="text-2xl font-bold text-green-700">0</div>
+                         </div>
+                         
+                         <!-- Interaktif Card: Sisa Beda Nominal -->
+                         <div id="cardExtraDiff" class="bg-red-50 p-4 rounded-xl border border-red-200 interactive-card cursor-pointer group text-center">
+                             <div class="text-xs text-red-600 font-bold uppercase mb-1 flex items-center justify-center gap-1">Sisa Beda Nominal <i data-lucide="external-link" class="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity"></i></div>
+                             <div id="extraDiff" class="text-2xl font-bold text-red-700">0</div>
+                         </div>
                      </div>
                 </div>
             </div>
@@ -1366,7 +1366,7 @@
                 if(!row || row.length < 7) continue;
                 
                 let cleanNo = cleanOrderId(row[0]);
-                let nominal = parseNum(row[6]);
+                let nominal = parseNum(row[6]); // Kolom ke-7
                 if(cleanNo) data3Map.set(cleanNo, nominal);
             }
 
@@ -1376,7 +1376,9 @@
                 if(data3Map.has(idToFind)) {
                     extraTotal++;
                     let nominalData3 = data3Map.get(idToFind);
-                    let newSelisih = diffItem.totalD1 - nominalData3;
+                    
+                    // KOMPARASI DATA 2 (AIO) VS DATA 3 (VALIDASI)
+                    let newSelisih = diffItem.totalD2 - nominalData3;
                     
                     let newType = 'EXTRA_DIFF';
                     if (Math.abs(newSelisih) === 0) {
@@ -1399,7 +1401,7 @@
                         ...diffItem,
                         tipeExtra: 'EXTRA_NOT_FOUND',
                         totalD3: 0,
-                        selisihExtra: diffItem.totalD1
+                        selisihExtra: diffItem.totalD2 // Jika tidak ada di Data 3, selisihnya = uang di Data 2
                     });
                 }
             });
@@ -1413,31 +1415,45 @@
             document.getElementById('compareExtraResultsArea').classList.remove('hidden-section');
         }
         
-        document.getElementById('btnViewExtraDiff').addEventListener('click', () => {
+        let currentExtraFilterMode = 'ALL';
+        
+        function openExtraModal(filterMode, title, icon, colorClass) {
             currentCompareType = 'EXTRA_VALIDATION'; 
-            document.getElementById('compareModalTitle').textContent = "Hasil Validasi Beda Nominal (Toped)";
-            document.getElementById('thStatusPlatform').textContent = `Status Tokopedia`;
+            currentExtraFilterMode = filterMode;
+            
+            document.getElementById('compareModalTitle').textContent = title;
+            document.getElementById('thStatusPlatform').textContent = `Status ${platformMode}`;
             
             const hdr = document.getElementById('compareModalHeader');
-            hdr.className = `px-6 py-4 flex justify-between items-center border-b text-white bg-yellow-600`;
+            hdr.className = `px-6 py-4 flex flex-wrap gap-4 justify-between items-center border-b text-white bg-${colorClass}-600`;
             const iconEl = document.getElementById('compareModalIcon');
-            iconEl.setAttribute('data-lucide', 'file-check-2');
+            iconEl.setAttribute('data-lucide', icon);
             lucide.createIcons();
 
             const statusFilter = document.getElementById('compareModalStatusFilter');
             const kurirFilter = document.getElementById('compareModalKurirFilter');
-            statusFilter.innerHTML = '<option value="ALL">Semua Status Platform</option>';
+            statusFilter.innerHTML = `<option value="ALL">Semua Status ${platformMode}</option>`;
             kurirFilter.innerHTML = '<option value="ALL">Semua Kurir</option>';
             
             let statuses = new Set(), kurirs = new Set();
-            compareExtraResults.forEach(r => { statuses.add(r.statusD1); kurirs.add(r.kurirD1); });
+            compareExtraResults.forEach(r => { 
+                if (filterMode === 'ALL' || 
+                   (filterMode === 'MATCH' && r.tipeExtra === 'EXTRA_SESUAI') || 
+                   (filterMode === 'DIFF' && r.tipeExtra !== 'EXTRA_SESUAI')) {
+                    statuses.add(r.statusD1); kurirs.add(r.kurirD1); 
+                }
+            });
             statuses.forEach(s => statusFilter.innerHTML += `<option value="${s}">${s}</option>`);
             kurirs.forEach(k => kurirFilter.innerHTML += `<option value="${k}">${k}</option>`);
 
             document.getElementById('compareModalSearch').value = '';
             applyExtraCompareModalFilters();
             compareModal.classList.remove('hidden-section');
-        });
+        }
+
+        document.getElementById('cardExtraTotal').addEventListener('click', () => openExtraModal('ALL', 'Total Validasi (D2 vs D3)', 'file-check-2', 'yellow'));
+        document.getElementById('cardExtraSesuai').addEventListener('click', () => openExtraModal('MATCH', 'Berhasil Tervalidasi (D2 Sesuai D3)', 'check-circle-2', 'green'));
+        document.getElementById('cardExtraDiff').addEventListener('click', () => openExtraModal('DIFF', 'Sisa Beda Nominal (D2 vs D3)', 'alert-triangle', 'red'));
         
         function applyExtraCompareModalFilters() {
             if(currentCompareType !== 'EXTRA_VALIDATION') return;
@@ -1450,21 +1466,25 @@
             const thead = document.querySelector('#compareModal table thead tr');
             thead.innerHTML = `
                 <th class="px-5 py-3">Tanggal AIO</th>
-                <th class="px-5 py-3">Tanggal Platform</th>
                 <th class="px-5 py-3">No. Pesanan / Inv</th>
                 <th class="px-5 py-3">Status Platform</th>
-                <th class="px-5 py-3 text-right">Data 1 (Platform)</th>
+                <th class="px-5 py-3 text-right">Data AIO (D2)</th>
                 <th class="px-5 py-3 text-right">Data Validasi (D3)</th>
+                <th class="px-5 py-3 text-right">Selisih (D2 - D3)</th>
                 <th class="px-5 py-3 text-right">Status Validasi</th>
             `;
 
             tbody.innerHTML = '';
 
             let filtered = compareExtraResults.filter(r => {
+                let matchType = true;
+                if(currentExtraFilterMode === 'MATCH' && r.tipeExtra !== 'EXTRA_SESUAI') matchType = false;
+                if(currentExtraFilterMode === 'DIFF' && r.tipeExtra === 'EXTRA_SESUAI') matchType = false;
+                
                 let matchS = r.noPesanan.toLowerCase().includes(s) || r.invoice.toLowerCase().includes(s);
                 let matchStatus = statusF === 'ALL' || r.statusD1 === statusF;
                 let matchKurir = kurirF === 'ALL' || r.kurirD1 === kurirF;
-                return matchS && matchStatus && matchKurir;
+                return matchType && matchS && matchStatus && matchKurir;
             });
 
             filtered.sort((a,b) => Math.abs(b.selisihExtra) - Math.abs(a.selisihExtra));
@@ -1481,27 +1501,27 @@
                 `).join('');
                 
                 let valStatus = '';
-                if(r.tipeExtra === 'EXTRA_SESUAI') valStatus = '<span class="text-green-600"><i data-lucide="check" class="inline w-4 h-4"></i> Valid (Match)</span>';
-                else if(r.tipeExtra === 'EXTRA_NOT_FOUND') valStatus = '<span class="text-gray-500">Tdk Ditemukan di D3</span>';
+                if(r.tipeExtra === 'EXTRA_SESUAI') valStatus = '<span class="text-green-600"><i data-lucide="check" class="inline w-4 h-4"></i> Match (D2=D3)</span>';
+                else if(r.tipeExtra === 'EXTRA_NOT_FOUND') valStatus = '<span class="text-gray-500">Tdk Ada di D3</span>';
                 else valStatus = `<span class="text-red-600">Selisih: ${formatRp(r.selisihExtra)}</span>`;
 
                 html += `
                     <tr class="${bg} cursor-pointer hover:bg-yellow-50 transition-colors" onclick="document.getElementById('det_${trId}').classList.toggle('hidden')">
                         <td class="px-5 py-4 text-gray-600 whitespace-nowrap">${r.tanggalAIO}</td>
-                        <td class="px-5 py-4 text-gray-600 whitespace-nowrap">${r.tanggalD1}</td>
                         <td class="px-5 py-4">
                             <div class="font-bold text-gray-900 flex items-center gap-2"><i data-lucide="chevron-down" class="h-4 w-4 text-gray-400"></i> ${r.noPesanan}</div>
                             <div class="text-xs text-gray-400 mt-0.5">${r.invoice}</div>
                             <div class="text-xs text-gray-500 mt-1 inline-block bg-yellow-50 text-yellow-700 px-2 py-0.5 rounded">${r.kurirD1}</div>
                         </td>
                         <td class="px-5 py-4 font-medium text-gray-600">${r.statusD1}</td>
-                        <td class="px-5 py-4 text-right font-medium text-gray-900">${formatRp(r.totalD1)}</td>
-                        <td class="px-5 py-4 text-right font-medium text-gray-900">${r.tipeExtra === 'EXTRA_NOT_FOUND' ? '-' : formatRp(r.totalD3)}</td>
+                        <td class="px-5 py-4 text-right font-medium text-blue-600">${formatRp(r.totalD2)}</td>
+                        <td class="px-5 py-4 text-right font-medium text-yellow-700">${r.tipeExtra === 'EXTRA_NOT_FOUND' ? '-' : formatRp(r.totalD3)}</td>
+                        <td class="px-5 py-4 text-right font-bold text-red-600">${formatRp(r.selisihExtra)}</td>
                         <td class="px-5 py-4 text-right font-bold">${valStatus}</td>
                     </tr>
                     <tr id="det_${trId}" class="hidden bg-yellow-50 border-b border-yellow-200 shadow-inner">
                         <td colspan="7" class="px-5 py-3">
-                            <div class="text-xs font-bold text-yellow-700 uppercase mb-2">Rincian Produk (Data 1)</div>
+                            <div class="text-xs font-bold text-yellow-700 uppercase mb-2">Rincian Produk (Data Platform)</div>
                             ${itemsHtml}
                         </td>
                     </tr>
@@ -1562,33 +1582,36 @@
         });
 
         document.getElementById('btnExportCompare').addEventListener('click', () => {
-            const s = document.getElementById('compareModalSearch').value.toLowerCase();
+            const search = document.getElementById('compareModalSearch').value.toLowerCase();
             const statusF = document.getElementById('compareModalStatusFilter').value;
             const kurirF = document.getElementById('compareModalKurirFilter').value;
             const withItem = document.getElementById('chkExportItemCompare').checked;
             
             if(currentCompareType === 'EXTRA_VALIDATION') {
                 let filtered = compareExtraResults.filter(r => {
-                    let matchS = r.noPesanan.toLowerCase().includes(s) || r.invoice.toLowerCase().includes(s);
+                    let matchType = true;
+                    if(currentExtraFilterMode === 'MATCH' && r.tipeExtra !== 'EXTRA_SESUAI') matchType = false;
+                    if(currentExtraFilterMode === 'DIFF' && r.tipeExtra === 'EXTRA_SESUAI') matchType = false;
+                    
+                    let matchS = r.noPesanan.toLowerCase().includes(search) || r.invoice.toLowerCase().includes(search);
                     let matchStatus = statusF === 'ALL' || r.statusD1 === statusF;
                     let matchKurir = kurirF === 'ALL' || r.kurirD1 === kurirF;
-                    return matchS && matchStatus && matchKurir;
+                    return matchType && matchS && matchStatus && matchKurir;
                 });
                 
                 const exportData = [];
                 filtered.forEach(r => {
                     let base = {
                         "Tanggal AIO": r.tanggalAIO,
-                        "Tanggal Platform": r.tanggalD1,
                         "No. Pesanan": r.noPesanan,
                         "Invoice": r.invoice,
                         "Status Platform": r.statusD1,
                         "Kurir Platform": r.kurirD1,
                         "Nominal Platform (Data 1)": r.totalD1,
-                        "Nominal AIO (Data 2 Awal)": r.totalD2,
+                        "Nominal AIO (Data 2)": r.totalD2,
                         "Nominal Validasi (Data 3)": r.tipeExtra === 'EXTRA_NOT_FOUND' ? 0 : r.totalD3,
-                        "Status Validasi": r.tipeExtra === 'EXTRA_SESUAI' ? 'Match' : (r.tipeExtra === 'EXTRA_NOT_FOUND' ? 'Not Found in D3' : 'Diff'),
-                        "Selisih Akhir": r.selisihExtra
+                        "Status Validasi": r.tipeExtra === 'EXTRA_SESUAI' ? 'Match (D2=D3)' : (r.tipeExtra === 'EXTRA_NOT_FOUND' ? 'Tidak Ditemukan di D3' : 'Beda Nominal'),
+                        "Selisih AIO vs D3": r.selisihExtra
                     };
 
                     if(withItem && r.orderD1Data.items.length > 0) {
