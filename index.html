@@ -1615,7 +1615,7 @@
         });
 
         document.getElementById('btnExportCompare').addEventListener('click', () => {
-            const search = document.getElementById('compareModalSearch').value.toLowerCase();
+            const s = document.getElementById('compareModalSearch').value.toLowerCase();
             const statusF = document.getElementById('compareModalStatusFilter').value;
             const kurirF = document.getElementById('compareModalKurirFilter').value;
             const withItem = document.getElementById('chkExportItemCompare').checked;
@@ -1626,7 +1626,7 @@
                     if(currentExtraFilterMode === 'MATCH' && r.tipeExtra !== 'EXTRA_SESUAI') matchType = false;
                     if(currentExtraFilterMode === 'DIFF' && r.tipeExtra === 'EXTRA_SESUAI') matchType = false;
                     
-                    let matchS = r.noPesanan.toLowerCase().includes(search) || r.invoice.toLowerCase().includes(search);
+                    let matchS = r.noPesanan.toLowerCase().includes(s) || r.invoice.toLowerCase().includes(s);
                     let matchStatus = statusF === 'ALL' || r.statusD1 === statusF;
                     let matchKurir = kurirF === 'ALL' || r.kurirD1 === kurirF;
                     return matchType && matchS && matchStatus && matchKurir;
