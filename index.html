@@ -1116,7 +1116,7 @@
                             let statLC = d1Match.status.toLowerCase();
 
                             if (statLC.includes('batal') || statLC.includes('cancel') || statLC.includes('pengembalian')) {
-                                tipe = 'BATAL_DI_SHOPEE';
+                                tipe = 'BATAL_DI_PLATFORM';
                                 cBatal++;
                             } else if (selisih === 0) {
                                 tipe = 'SESUAI';
@@ -1274,7 +1274,7 @@
         // Card Click Listeners (Compare)
         document.getElementById('cardCompSesuai').addEventListener('click', () => openCompareModal('SESUAI', 'green', 'Pesanan Sesuai Nominal', 'check-circle-2'));
         document.getElementById('cardCompDiff').addEventListener('click', () => openCompareModal('BEDA_NOMINAL', 'yellow', 'Rincian Beda Nominal', 'alert-triangle'));
-        document.getElementById('cardCompBatal').addEventListener('click', () => openCompareModal('BATAL_DI_SHOPEE', 'red', `Pesanan Batal di ${platform === 'SHOPEE' ? 'Shopee' : 'Tokopedia'}`, 'x-circle'));
+        document.getElementById('cardCompBatal').addEventListener('click', () => openCompareModal('BATAL_DI_PLATFORM', 'red', `Pesanan Batal di ${platform === 'SHOPEE' ? 'Shopee' : 'Tokopedia'}`, 'x-circle'));
 
         // Card Click Listeners (Extra Tokopedia)
         document.getElementById('cardExtraTotal').addEventListener('click', () => openExtraValidationModal('ALL'));
@@ -1391,17 +1391,11 @@
             document.getElementById('compareModalTitle').innerHTML = `<i data-lucide="${icon}" class="inline h-5 w-5 mr-2 text-${color}-500"></i> ${title}`;
             document.getElementById('compareModalSearch').value = '';
 
-            // Header adjustments based on User request (If DIFF, show D1 vs D2 on screen too)
+            // Header adjustments based on User request
             document.getElementById('thStatusPlat').textContent = 'Status Tokopedia';
-            if (mode === 'DIFF') {
-                document.getElementById('thCompareD1').textContent = 'Nominal Platform (D1)';
-                document.getElementById('thCompareD2').textContent = 'Nominal AIO (D2)';
-                document.getElementById('thCompareSelisih').textContent = 'Selisih (D1 vs D2)';
-            } else {
-                document.getElementById('thCompareD1').textContent = 'Data AIO (D2)';
-                document.getElementById('thCompareD2').textContent = 'Data Validasi (D3)';
-                document.getElementById('thCompareSelisih').textContent = 'Selisih (D2 - D3)';
-            }
+            document.getElementById('thCompareD1').textContent = 'Data AIO (D2)';
+            document.getElementById('thCompareD2').textContent = 'Data Validasi (D3)';
+            document.getElementById('thCompareSelisih').textContent = 'Selisih (D2 - D3)';
 
             // Populate Filters safely
             const statuses = new Set();
@@ -1548,41 +1542,22 @@
                     let tr = document.createElement('tr');
                     tr.className = 'bg-white border-b hover:bg-gray-50';
                     
-                    if (currentExtraFilterMode === 'DIFF') {
-                        // Request: Show D1, D2, Selisih D1 vs D2
-                        tr.innerHTML = `
-                            <td class="px-6 py-4">
-                                <div class="font-medium text-gray-900 cursor-pointer hover:text-blue-600" onclick="toggleCompareDetail('${r.noPesanan}')">
-                                    ${r.noPesanan} <i data-lucide="chevron-down" class="inline h-4 w-4"></i>
-                                </div>
-                                ${r.invoice && r.invoice !== r.noPesanan ? `<div class="text-xs text-gray-500 mt-1">${r.invoice}</div>` : ''}
-                                <div class="text-xs text-blue-600 mt-1">${r.kurirD1}</div>
-                            </td>
-                            <td class="px-6 py-4"><span class="bg-gray-100 px-2 py-1 rounded text-xs font-medium">${r.statusD1}</span></td>
-                            <td class="px-6 py-4 font-medium text-gray-900">${formatRupiah(r.totalD1)}</td>
-                            <td class="px-6 py-4 font-medium text-gray-900">${formatRupiah(r.totalD2)}</td>
-                            <td class="px-6 py-4 text-right font-bold ${r.selisih === 0 ? 'text-green-600' : 'text-red-600'}">
-                                ${formatRupiah(r.selisih)}
-                            </td>
-                        `;
-                    } else {
-                        // Display D2 vs D3
-                        tr.innerHTML = `
-                            <td class="px-6 py-4">
-                                <div class="font-medium text-gray-900 cursor-pointer hover:text-blue-600" onclick="toggleCompareDetail('${r.noPesanan}')">
-                                    ${r.noPesanan} <i data-lucide="chevron-down" class="inline h-4 w-4"></i>
-                                </div>
-                                ${r.invoice && r.invoice !== r.noPesanan ? `<div class="text-xs text-gray-500 mt-1">${r.invoice}</div>` : ''}
-                                <div class="text-xs text-blue-600 mt-1">${r.kurirD1}</div>
-                            </td>
-                            <td class="px-6 py-4"><span class="bg-gray-100 px-2 py-1 rounded text-xs font-medium">${r.statusD1}</span></td>
-                            <td class="px-6 py-4 font-medium text-gray-900">${formatRupiah(r.totalD2)}</td>
-                            <td class="px-6 py-4 font-medium text-gray-900">${r.tipeExtra === 'EXTRA_NOT_FOUND' ? '<span class="text-red-500 text-xs">Tidak Ditemukan</span>' : formatRupiah(r.totalD3)}</td>
-                            <td class="px-6 py-4 text-right font-bold ${r.selisihExtra === 0 ? 'text-green-600' : 'text-red-600'}">
-                                ${formatRupiah(r.selisihExtra)}
-                            </td>
-                        `;
-                    }
+                    // Display D2 vs D3 untuk semua tab validasi (Match, Diff, All)
+                    tr.innerHTML = `
+                        <td class="px-6 py-4">
+                            <div class="font-medium text-gray-900 cursor-pointer hover:text-blue-600" onclick="toggleCompareDetail('${r.noPesanan}')">
+                                ${r.noPesanan} <i data-lucide="chevron-down" class="inline h-4 w-4"></i>
+                            </div>
+                            ${r.invoice && r.invoice !== r.noPesanan ? `<div class="text-xs text-gray-500 mt-1">${r.invoice}</div>` : ''}
+                            <div class="text-xs text-blue-600 mt-1">${r.kurirD1}</div>
+                        </td>
+                        <td class="px-6 py-4"><span class="bg-gray-100 px-2 py-1 rounded text-xs font-medium">${r.statusD1}</span></td>
+                        <td class="px-6 py-4 font-medium text-gray-900">${formatRupiah(r.totalD2)}</td>
+                        <td class="px-6 py-4 font-medium text-gray-900">${r.tipeExtra === 'EXTRA_NOT_FOUND' ? '<span class="text-red-500 text-xs">Tidak Ditemukan</span>' : formatRupiah(r.totalD3)}</td>
+                        <td class="px-6 py-4 text-right font-bold ${r.selisihExtra === 0 ? 'text-green-600' : 'text-red-600'}">
+                            ${formatRupiah(r.selisihExtra)}
+                        </td>
+                    `;
                     tbody.appendChild(tr);
                     attachCompareChildRow(tbody, r);
                 });
@@ -1724,35 +1699,17 @@
                 
                 const exportData = [];
                 filtered.forEach(r => {
-                    let base = {};
-                    
-                    // Format khusus Sisa Beda Nominal (DIFF)
-                    if (currentExtraFilterMode === 'DIFF') {
-                        base = {
-                            "Tanggal AIO": r.tanggalAIO,
-                            "No. Pesanan": r.noPesanan,
-                            "Invoice": r.invoice,
-                            "Status Platform": r.statusD1,
-                            "Kurir Platform": r.kurirD1,
-                            "Nominal Platform (Data 1)": r.totalD1,
-                            "Nominal AIO (Data 2)": r.totalD2,
-                            "Selisih Nominal (D1 vs D2)": r.selisih
-                        };
-                    } else {
-                        // Format untuk Match / All
-                        base = {
-                            "Tanggal AIO": r.tanggalAIO,
-                            "No. Pesanan": r.noPesanan,
-                            "Invoice": r.invoice,
-                            "Status Platform": r.statusD1,
-                            "Kurir Platform": r.kurirD1,
-                            "Nominal Platform (Data 1)": r.totalD1,
-                            "Nominal AIO (Data 2)": r.totalD2,
-                            "Nominal Validasi (Data 3)": r.tipeExtra === 'EXTRA_NOT_FOUND' ? 0 : r.totalD3,
-                            "Status Validasi": r.tipeExtra === 'EXTRA_SESUAI' ? 'Match (D2=D3)' : (r.tipeExtra === 'EXTRA_NOT_FOUND' ? 'Tidak Ditemukan di D3' : 'Beda Nominal'),
-                            "Selisih AIO vs D3": r.selisihExtra
-                        };
-                    }
+                    let base = {
+                        "Tanggal AIO": r.tanggalAIO,
+                        "No. Pesanan": r.noPesanan,
+                        "Invoice": r.invoice,
+                        "Status Platform": r.statusD1,
+                        "Kurir Platform": r.kurirD1,
+                        "Nominal AIO (Data 2)": r.totalD2,
+                        "Nominal Validasi (Data 3)": r.tipeExtra === 'EXTRA_NOT_FOUND' ? 0 : r.totalD3,
+                        "Status Validasi": r.tipeExtra === 'EXTRA_SESUAI' ? 'Match (D2=D3)' : (r.tipeExtra === 'EXTRA_NOT_FOUND' ? 'Tidak Ditemukan di D3' : 'Beda Nominal'),
+                        "Selisih AIO vs D3": r.selisihExtra
+                    };
 
                     if(withItem && r.orderD1Data && r.orderD1Data.items && r.orderD1Data.items.length > 0) {
                         r.orderD1Data.items.forEach(it => exportData.push({ ...base, "SKU": it.sku, "Nama Produk": it.namaProduk, "Qty": it.qty, "Subtotal Item": it.totalItem }));
@@ -1793,7 +1750,12 @@
                     exportData.push(base);
                 }
             });
-            downloadExcel(exportData, `Ekspor_Komparasi_${currentCompareType}`);
+            
+            let exportName = currentCompareType;
+            if (currentCompareType === 'BATAL_DI_PLATFORM') {
+                exportName = `BATAL_DI_${platform}`;
+            }
+            downloadExcel(exportData, `Ekspor_Komparasi_${exportName}`);
         });
 
         // Closing Modals
