@@ -20,7 +20,7 @@
 
     <!-- SCREEN 1: UPLOAD SCREEN -->
     <div id="uploadScreen" class="min-h-screen flex flex-col items-center justify-center p-4 transition-colors duration-500">
-        <div class="bg-white w-full max-w-md shadow-lg rounded-xl border border-gray-200 overflow-hidden relative">
+        <div class="bg-white w-full max-w-lg shadow-lg rounded-xl border border-gray-200 overflow-hidden relative">
             
             <div id="uploadHeader" class="p-6 text-center border-b border-gray-100 transition-colors duration-300">
                 <div id="uploadIconContainer" class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 transition-colors duration-300">
@@ -31,26 +31,38 @@
             </div>
 
             <div class="p-6">
-                <!-- Platform Toggle -->
-                <div class="flex gap-2 mb-6">
-                    <button id="btnShopee" class="flex-1 py-3 px-4 rounded-xl border-2 border-gray-200 font-bold text-gray-500 flex flex-col items-center gap-2 hover:border-[#EE4D2D] hover:text-[#EE4D2D] hover:bg-orange-50 transition-all">
-                        <i data-lucide="shopping-bag" class="h-6 w-6"></i>
-                        Shopee
+                <!-- Platform Toggle (Cards) -->
+                <div id="platformSelection" class="grid grid-cols-2 gap-4 mb-4">
+                    <button id="btnShopee" class="py-6 px-4 rounded-xl border-2 border-gray-200 text-gray-500 flex flex-col items-center gap-3 hover:border-[#EE4D2D] hover:text-[#EE4D2D] hover:bg-orange-50 transition-all group">
+                        <div class="p-3 bg-gray-100 rounded-full group-hover:bg-orange-100 transition-colors">
+                            <i data-lucide="shopping-bag" class="h-8 w-8"></i>
+                        </div>
+                        <span class="font-bold text-lg">Shopee</span>
                     </button>
-                    <button id="btnTokopedia" class="flex-1 py-3 px-4 rounded-xl border-2 border-gray-200 font-bold text-gray-500 flex flex-col items-center gap-2 hover:border-[#00AA5B] hover:text-[#00AA5B] hover:bg-green-50 transition-all">
-                        <i data-lucide="store" class="h-6 w-6"></i>
-                        Tokopedia
+                    
+                    <button id="btnTokopedia" class="py-6 px-4 rounded-xl border-2 border-gray-200 text-gray-500 flex flex-col items-center gap-3 hover:border-[#00AA5B] hover:text-[#00AA5B] hover:bg-green-50 transition-all group">
+                        <div class="p-3 bg-gray-100 rounded-full group-hover:bg-green-100 transition-colors">
+                            <i data-lucide="store" class="h-8 w-8"></i>
+                        </div>
+                        <span class="font-bold text-lg">Tokopedia</span>
                     </button>
                 </div>
 
                 <!-- Upload Area (Hidden until platform selected) -->
                 <div id="uploadArea" class="hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-gray-700">Unggah Data 1 (<span class="lblPlatformName">Platform</span>)</h3>
+                        <button id="btnBackPlatform" class="text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1">
+                            <i data-lucide="arrow-left" class="h-4 w-4"></i> Kembali
+                        </button>
+                    </div>
+
                     <label for="excelFileInput" class="border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
                         <input type="file" id="excelFileInput" accept=".xlsx, .xls" class="hidden" />
                         
                         <div id="uploadState" class="flex flex-col items-center">
                             <i data-lucide="upload-cloud" class="h-10 w-10 text-gray-400 mb-3"></i>
-                            <p class="text-sm font-medium text-gray-700">Klik untuk unggah <span id="lblUploadPlatform">File</span></p>
+                            <p class="text-sm font-medium text-gray-700">Klik untuk unggah <span class="lblPlatformName">File</span></p>
                             <p class="text-xs text-gray-500 mt-1">Format Excel (.xlsx / .xls)</p>
                         </div>
 
@@ -300,7 +312,7 @@
                 </div>
 
                 <div id="compareResultsArea" class="hidden-section">
-                    <div id="compareGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div id="compareGrid" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
                         <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
                             <div class="text-sm text-gray-500 mb-1">Total Data AIO</div>
                             <div id="compTotal" class="text-xl font-bold text-gray-900">0</div>
@@ -318,6 +330,13 @@
                                 Beda Nominal <i data-lucide="external-link" class="h-4 w-4 opacity-50 group-hover:opacity-100"></i>
                             </div>
                             <div id="compDiff" class="text-xl font-bold text-yellow-800">0</div>
+                        </div>
+
+                        <div id="cardCompBaruDiterima" class="bg-teal-50 p-4 rounded-xl border border-teal-300 interactive-card cursor-pointer group">
+                            <div class="text-sm text-teal-700 mb-1 flex justify-between">
+                                Pesanan Baru Diterima <i data-lucide="external-link" class="h-4 w-4 opacity-50 group-hover:opacity-100"></i>
+                            </div>
+                            <div id="compBaruDiterima" class="text-xl font-bold text-teal-800">0</div>
                         </div>
 
                         <div id="cardCompBatal" class="bg-red-50 p-4 rounded-xl border border-red-300 interactive-card cursor-pointer group">
@@ -352,16 +371,16 @@
 
                 <div id="extraResultsArea" class="hidden-section mt-4">
                      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div id="cardExtraTotal" class="bg-white p-4 rounded-xl border border-gray-200 interactive-card cursor-pointer">
-                            <div class="text-sm text-gray-500 mb-1 flex justify-between">Total Validasi <i data-lucide="external-link" class="h-3 w-3"></i></div>
+                        <div id="cardExtraTotal" class="bg-white p-4 rounded-xl border border-gray-200 interactive-card cursor-pointer group">
+                            <div class="text-sm text-gray-500 mb-1 flex justify-between">Total Validasi <i data-lucide="external-link" class="h-4 w-4 opacity-50 group-hover:opacity-100"></i></div>
                             <div id="extraTotal" class="text-xl font-bold text-gray-900">0</div>
                         </div>
-                        <div id="cardExtraMatch" class="bg-green-100 p-4 rounded-xl border border-green-300 interactive-card cursor-pointer">
-                            <div class="text-sm text-green-700 mb-1 flex justify-between">Berhasil Tervalidasi <i data-lucide="external-link" class="h-3 w-3"></i></div>
+                        <div id="cardExtraMatch" class="bg-green-100 p-4 rounded-xl border border-green-300 interactive-card cursor-pointer group">
+                            <div class="text-sm text-green-700 mb-1 flex justify-between">Berhasil Tervalidasi <i data-lucide="external-link" class="h-4 w-4 opacity-50 group-hover:opacity-100"></i></div>
                             <div id="extraMatch" class="text-xl font-bold text-green-800">0</div>
                         </div>
-                        <div id="cardExtraDiff" class="bg-red-100 p-4 rounded-xl border border-red-300 interactive-card cursor-pointer">
-                            <div class="text-sm text-red-700 mb-1 flex justify-between">Sisa Beda Nominal (D2 vs D3) <i data-lucide="external-link" class="h-3 w-3"></i></div>
+                        <div id="cardExtraDiff" class="bg-red-100 p-4 rounded-xl border border-red-300 interactive-card cursor-pointer group">
+                            <div class="text-sm text-red-700 mb-1 flex justify-between">Sisa Beda Nominal (D2 vs D3) <i data-lucide="external-link" class="h-4 w-4 opacity-50 group-hover:opacity-100"></i></div>
                             <div id="extraDiff" class="text-xl font-bold text-red-800">0</div>
                         </div>
                     </div>
@@ -374,33 +393,35 @@
     <!-- MODAL POPUP FOR LISTINGS (General) -->
     <div id="mainModal" class="fixed inset-0 bg-black/50 hidden z-50 flex flex-col items-center justify-center p-4">
         <div class="bg-white w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div id="mainModalHeader" class="p-5 border-b flex justify-between items-center text-white">
+            <div id="mainModalHeader" class="p-5 border-b flex justify-between items-center text-white bg-gray-900">
                 <h3 id="mainModalTitle" class="text-xl font-bold flex items-center gap-2">Rincian</h3>
-                <button id="btnCloseMainModal" class="hover:bg-white/20 p-1 rounded-full transition-colors">
+                <button id="btnCloseMainModal" class="hover:bg-white/20 p-1 rounded-full transition-colors text-white">
                     <i data-lucide="x" class="h-6 w-6"></i>
                 </button>
             </div>
             
             <!-- Filters -->
-            <div class="p-4 bg-gray-50 border-b flex flex-wrap gap-3 items-center">
-                <div class="relative flex-1 min-w-[200px]">
-                    <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"></i>
-                    <input type="text" id="mainModalSearch" placeholder="Cari No. Pesanan / Resi..." class="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+            <div class="p-4 bg-gray-50 border-b flex flex-wrap gap-3 items-center justify-between">
+                <div class="flex flex-wrap gap-3 items-center flex-1">
+                    <div class="relative flex-1 min-w-[200px] max-w-md">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"></i>
+                        <input type="text" id="mainModalSearch" placeholder="Cari No. Pesanan / Resi..." class="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <select id="mainModalKurir" class="text-sm border border-gray-300 rounded-lg px-3 py-2 shrink-0">
+                        <option value="ALL">Semua Kurir</option>
+                    </select>
+                    <select id="mainModalSort" class="text-sm border border-gray-300 rounded-lg px-3 py-2 shrink-0">
+                        <option value="DESC">Nominal Terbesar</option>
+                        <option value="ASC">Nominal Terkecil</option>
+                    </select>
+                    <select id="mainModalAlasan" class="text-sm border border-gray-300 rounded-lg px-3 py-2 shrink-0 hidden">
+                        <option value="ALL">Semua Alasan</option>
+                    </select>
                 </div>
-                <select id="mainModalKurir" class="text-sm border border-gray-300 rounded-lg px-3 py-2 shrink-0">
-                    <option value="ALL">Semua Kurir</option>
-                </select>
-                <select id="mainModalSort" class="text-sm border border-gray-300 rounded-lg px-3 py-2 shrink-0">
-                    <option value="DESC">Nominal Terbesar</option>
-                    <option value="ASC">Nominal Terkecil</option>
-                </select>
-                <select id="mainModalAlasan" class="text-sm border border-gray-300 rounded-lg px-3 py-2 shrink-0 hidden">
-                    <option value="ALL">Semua Alasan</option>
-                </select>
                 <div class="flex items-center gap-2 shrink-0 bg-white px-3 py-1.5 rounded-lg border border-gray-200">
                     <input type="checkbox" id="chkExportItem" checked class="rounded text-green-600 focus:ring-green-500">
-                    <label for="chkExportItem" class="text-xs font-medium text-gray-700 cursor-pointer">Rincian Item</label>
-                    <button id="btnExportMain" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-1 transition-colors ml-2">
+                    <label for="chkExportItem" class="text-xs font-medium text-gray-700 cursor-pointer">Rincian Produk</label>
+                    <button id="btnExportMain" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-1 transition-colors ml-2 shrink-0">
                         <i data-lucide="download" class="h-4 w-4"></i> Excel
                     </button>
                 </div>
@@ -431,29 +452,31 @@
     <!-- MODAL POPUP FOR COMPARE RESULTS -->
     <div id="compareModal" class="fixed inset-0 bg-black/60 hidden z-50 flex flex-col items-center justify-center p-4">
         <div class="bg-white w-full max-w-6xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-white">
-                <h3 id="compareModalTitle" class="text-xl font-bold flex items-center text-gray-800">Judul</h3>
-                <button id="btnCloseCompareModal" class="text-gray-500 hover:bg-gray-100 p-1.5 rounded-full transition-colors">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-900">
+                <h3 id="compareModalTitle" class="text-xl font-bold flex items-center text-white">Judul</h3>
+                <button id="btnCloseCompareModal" class="text-gray-400 hover:text-white hover:bg-gray-800 p-1.5 rounded-full transition-colors">
                     <i data-lucide="x" class="h-6 w-6"></i>
                 </button>
             </div>
             
             <!-- Filters Compare -->
-            <div class="p-4 bg-gray-50 border-b flex flex-wrap gap-3 items-center">
-                <div class="relative flex-1 min-w-[200px]">
-                    <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"></i>
-                    <input type="text" id="compareModalSearch" placeholder="Cari No. Pesanan / Invoice..." class="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+            <div class="p-4 bg-gray-50 border-b flex flex-wrap gap-3 items-center justify-between">
+                <div class="flex flex-wrap gap-3 items-center flex-1">
+                    <div class="relative flex-1 min-w-[200px] max-w-md">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"></i>
+                        <input type="text" id="compareModalSearch" placeholder="Cari No. Pesanan / Invoice..." class="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <select id="compareModalStatusFilter" class="text-sm border border-gray-300 rounded-lg px-3 py-2 shrink-0">
+                        <option value="ALL">Semua Status</option>
+                    </select>
+                    <select id="compareModalKurirFilter" class="text-sm border border-gray-300 rounded-lg px-3 py-2 shrink-0">
+                        <option value="ALL">Semua Kurir</option>
+                    </select>
                 </div>
-                <select id="compareModalStatusFilter" class="text-sm border border-gray-300 rounded-lg px-3 py-2 shrink-0">
-                    <option value="ALL">Semua Status</option>
-                </select>
-                <select id="compareModalKurirFilter" class="text-sm border border-gray-300 rounded-lg px-3 py-2 shrink-0">
-                    <option value="ALL">Semua Kurir</option>
-                </select>
                 <div class="flex items-center gap-2 shrink-0 bg-white px-3 py-1.5 rounded-lg border border-gray-200">
                     <input type="checkbox" id="chkExportItemCompare" checked class="rounded text-green-600 focus:ring-green-500">
-                    <label for="chkExportItemCompare" class="text-xs font-medium text-gray-700 cursor-pointer">Rincian Item</label>
-                    <button id="btnExportCompare" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-1 transition-colors ml-2">
+                    <label for="chkExportItemCompare" class="text-xs font-medium text-gray-700 cursor-pointer">Rincian Produk</label>
+                    <button id="btnExportCompare" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-1 transition-colors ml-2 shrink-0">
                         <i data-lucide="download" class="h-4 w-4"></i> Excel
                     </button>
                 </div>
@@ -496,7 +519,7 @@
                 <table class="w-full text-sm text-left">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 shadow-sm z-10">
                         <tr>
-                            <th class="px-6 py-3">Tanggal & Waktu</th>
+                            <th class="px-6 py-3">Tanggal & Waktu (Lifetime)</th>
                             <th class="px-6 py-3">No. Pesanan</th>
                             <th class="px-6 py-3">Status</th>
                             <th class="px-6 py-3 text-center">Qty</th>
@@ -526,8 +549,7 @@
         let globalListBatal = [];
         let globalListProses = [];
         
-        let currentMainModalType = ''; // SELESAI | BATAL | PROMO_TOKO | VOUCHER_TOKO | VOUCHER_PLATFORM | ONGKIR_PEMBELI | ONGKIR_POTONGAN | ONGKIR_RETUR | TOTAL_PEMBAYARAN | ONGKIR_PERKIRAAN | KURIR
-        
+        let currentMainModalType = ''; 
         let compareResults = [];
         let currentCompareType = ''; 
 
@@ -542,60 +564,52 @@
             if (!val) return 0;
             return parseFloat(val.toString().replace(/[^0-9-]/g,"")) || 0;
         };
-
         const cleanString = (str) => str ? str.toString().trim() : '';
 
-        // UI Selectors
-        const uploadScreen = document.getElementById('uploadScreen');
-        const dashboardScreen = document.getElementById('dashboardScreen');
-        const fileInput = document.getElementById('excelFileInput');
-        
-        // PLATFORM SELECTION
+        // Extract Date from Excel
+        function getExcelDate(excelVal) {
+            if (!excelVal) return '-';
+            if (typeof excelVal === 'number') {
+                const jsDate = new Date((excelVal - 25569) * 86400 * 1000);
+                return jsDate.toISOString().replace('T', ' ').substring(0, 16);
+            }
+            return cleanString(excelVal);
+        }
+
+        // --- PLATFORM SELECTION ---
         document.getElementById('btnShopee').addEventListener('click', () => selectPlatform('SHOPEE'));
         document.getElementById('btnTokopedia').addEventListener('click', () => selectPlatform('TOKOPEDIA'));
+        document.getElementById('btnBackPlatform').addEventListener('click', () => {
+            document.getElementById('platformSelection').classList.remove('hidden');
+            document.getElementById('uploadArea').classList.add('hidden');
+            platform = null;
+        });
 
         function selectPlatform(selected) {
             platform = selected;
             document.querySelectorAll('.lblPlatformName').forEach(el => el.textContent = selected === 'SHOPEE' ? 'Shopee' : 'Tokopedia');
             document.getElementById('dashTitlePlatform').textContent = selected === 'SHOPEE' ? 'Shopee' : 'Tokopedia';
             
-            // Visual Updates
-            const isShopee = selected === 'SHOPEE';
-            const color = isShopee ? '#EE4D2D' : '#00AA5B';
-            const bgClass = isShopee ? 'bg-orange-100' : 'bg-green-100';
-            const textClass = isShopee ? 'text-[#EE4D2D]' : 'text-[#00AA5B]';
-            const iconName = isShopee ? 'shopping-bag' : 'store';
-
-            document.getElementById('uploadHeader').classList.add(bgClass);
-            
-            const iconContainer = document.getElementById('uploadIconContainer');
-            iconContainer.className = `mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-white shadow-sm`;
-            document.getElementById('uploadIcon').setAttribute('data-lucide', iconName);
-            document.getElementById('uploadIcon').classList.add(textClass);
-            
-            document.getElementById('dashIconBg').className = `p-2 rounded-lg ${bgClass}`;
-            document.getElementById('dashIcon').setAttribute('data-lucide', iconName);
-            document.getElementById('dashIcon').classList.add(textClass);
-            
-            lucide.createIcons();
-
-            document.getElementById('btnShopee').classList.add('hidden');
-            document.getElementById('btnTokopedia').classList.add('hidden');
+            document.getElementById('platformSelection').classList.add('hidden');
             document.getElementById('uploadArea').classList.remove('hidden');
 
             if (selected === 'TOKOPEDIA') {
                 document.getElementById('extraTokopediaSection').classList.remove('hidden');
                 document.getElementById('cardCompDiff').classList.add('hidden');
+                document.getElementById('cardCompBaruDiterima').classList.add('hidden');
+                document.getElementById('compareGrid').classList.replace('md:grid-cols-5', 'md:grid-cols-3');
                 document.getElementById('compareGrid').classList.replace('md:grid-cols-4', 'md:grid-cols-3');
             } else {
                 document.getElementById('extraTokopediaSection').classList.add('hidden');
                 document.getElementById('cardCompDiff').classList.remove('hidden');
-                document.getElementById('compareGrid').classList.replace('md:grid-cols-3', 'md:grid-cols-4');
+                document.getElementById('cardCompBaruDiterima').classList.remove('hidden');
+                document.getElementById('compareGrid').classList.replace('md:grid-cols-3', 'md:grid-cols-5');
+                document.getElementById('compareGrid').classList.replace('md:grid-cols-4', 'md:grid-cols-5');
             }
         }
 
-        // FILE UPLOAD (DATA 1)
-        fileInput.addEventListener('change', (e) => {
+        // --- FILE UPLOAD (DATA 1) ---
+        document.getElementById('excelFileInput').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
@@ -609,80 +623,47 @@
                 try {
                     const data = new Uint8Array(evt.target.result);
                     const workbook = XLSX.read(data, {type: 'array'});
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    const rawJson = XLSX.utils.sheet_to_json(worksheet, {header: 1, raw: false, defval: ""});
+                    const ws = workbook.Sheets[workbook.SheetNames[0]];
+                    const rawJson = XLSX.utils.sheet_to_json(ws, {header: 1, raw: false, defval: ""});
                     
                     if (platform === 'SHOPEE') {
                         processShopee(rawJson, file.name);
                     } else {
                         processTokopedia(rawJson, file.name);
                     }
-                    
                 } catch (err) {
                     console.error(err);
-                    showError("Gagal membaca file. Pastikan format kolom sesuai template platform.");
+                    document.getElementById('errorText').textContent = "Gagal membaca file. Pastikan format kolom sesuai template platform.";
+                    document.getElementById('errorMessage').classList.remove('hidden');
                 } finally {
                     document.getElementById('uploadState').classList.remove('hidden');
                     document.getElementById('loadingState').classList.add('hidden');
                     document.getElementById('loadingState').classList.remove('flex');
-                    fileInput.value = ''; 
+                    e.target.value = ''; 
                 }
             };
             reader.readAsArrayBuffer(file);
         });
 
-        function showError(msg) {
-            document.getElementById('errorText').textContent = msg;
-            document.getElementById('errorMessage').classList.remove('hidden');
-        }
-
-        // RESET
-        document.getElementById('btnReset').addEventListener('click', () => {
-            uploadScreen.classList.remove('hidden-section');
-            dashboardScreen.classList.add('hidden-section');
-            
-            document.getElementById('btnShopee').classList.remove('hidden');
-            document.getElementById('btnTokopedia').classList.remove('hidden');
-            document.getElementById('uploadArea').classList.add('hidden');
-            document.getElementById('uploadHeader').className = 'p-6 text-center border-b border-gray-100 transition-colors duration-300';
-            
-            platform = null;
-            rawData1 = [];
-            compareResults = [];
-            compareExtraResults = [];
-            document.getElementById('compareResultsArea').classList.add('hidden-section');
-            document.getElementById('compareUploadArea').classList.remove('hidden');
-            document.getElementById('extraResultsArea').classList.add('hidden-section');
-            
-            if(trendChartObj) trendChartObj.destroy();
-            if(statusChartObj) statusChartObj.destroy();
-            if(alasanChartObj) alasanChartObj.destroy();
-        });
-
-        // ------------------ PROCESSING LOGIC ------------------
-
+        // --- PROCESSING LOGIC ---
         function normalizeKurir(kurirRaw) {
             if (!kurirRaw) return 'Lainnya';
             let k = kurirRaw.toUpperCase();
             if (k.includes('INSTAN') || k.includes('SAME DAY') || k.includes('SAMEDAY') || k.includes('GOJEK') || k.includes('GRAB')) return 'Instan/Sameday';
-            if (k.includes('KARGO') || k.includes('CARGO')) return 'Kargo';
-            if (k.includes('REGULER') || k.includes('HEMAT') || k.includes('STANDARD') || k.includes('ID EXPRESS')) return 'Reguler';
-            return 'Reguler'; // Default
+            if (k.includes('KARGO') || k.includes('CARGO') || k.includes('SPX STANDARD') || k.includes('HEMAT') || k.includes('ID EXPRESS') || k.includes('REGULER') || k.includes('STANDARD')) return 'Reguler';
+            return 'Lainnya'; 
         }
 
         function extractDate(dateStr) {
             if (!dateStr) return null;
-            // Handle Shopee format "YYYY-MM-DD HH:MM" or Toped formats
             const parts = dateStr.split(' ');
             if (parts.length > 0) return parts[0];
             return null;
         }
 
-        // --- SHOPEE ---
+        // SHOPEE
         function processShopee(rows, fileName) {
             const processed = new Map();
-            
             for (let i = 1; i < rows.length; i++) {
                 const row = rows[i];
                 if (!row || row.length < 10) continue;
@@ -694,14 +675,14 @@
                 const alasan = cleanString(row[2]);
                 const resi = cleanString(row[4]);
                 const kurirAsli = cleanString(row[5]);
-                const tglDibuat = cleanString(row[9]);
+                const tglDibuat = getExcelDate(row[9]);
+                const tglSelesai = getExcelDate(row[48]); // Kolom 49
                 
                 const sku = cleanString(row[14]);
                 const namaProduk = cleanString(row[13]);
                 const hargaDiskon = parseNumber(row[17]);
                 const qty = parseNumber(row[18]);
                 
-                // Financials (row based - take first occurrence)
                 const diskonPenjual = parseNumber(row[22]);
                 const voucherPenjual = parseNumber(row[27]);
                 const voucherShopee = parseNumber(row[29]);
@@ -722,17 +703,15 @@
                         kurirAsli: kurirAsli,
                         kurirNormal: normalizeKurir(kurirAsli),
                         tanggal: extractDate(tglDibuat),
-                        waktuLengkap: tglDibuat,
+                        waktuLengkap: tglSelesai !== '-' ? tglSelesai : tglDibuat, // Use Selesai if available
                         items: [],
                         totalPenjualan: 0,
                         totalQty: 0,
-                        
                         diskonPenjual: diskonPenjual,
                         voucherPenjual: voucherPenjual,
                         voucherShopee: voucherShopee,
                         paketDiskonPenjual: paketDiskonPenjual,
                         totalPromoToko: diskonPenjual + paketDiskonPenjual,
-
                         ongkirPembeli, potOngkir, ongkirRetur, totalBayar, perkiraanOngkir
                     });
                 }
@@ -740,38 +719,27 @@
                 const order = processed.get(noPesanan);
                 const subtotal = hargaDiskon * qty;
                 
-                order.items.push({
-                    sku: sku,
-                    namaProduk: namaProduk,
-                    hargaDiskon: hargaDiskon,
-                    qty: qty,
-                    totalItem: subtotal
-                });
-                
+                order.items.push({ sku: sku, namaProduk: namaProduk, hargaDiskon: hargaDiskon, qty: qty, totalItem: subtotal });
                 order.totalPenjualan += subtotal;
                 order.totalQty += qty;
             }
 
-            if (processed.size === 0) {
-                throw new Error("Data valid tidak ditemukan.");
-            }
-
+            if (processed.size === 0) throw new Error("Data valid tidak ditemukan.");
             rawData1 = Array.from(processed.values());
             document.getElementById('displayFileName').textContent = fileName;
             buildDashboard();
         }
 
-        // --- TOKOPEDIA ---
+        // TOKOPEDIA
         function processTokopedia(rows, fileName) {
             const processed = new Map();
-            
             for (let i = 1; i < rows.length; i++) {
                 const row = rows[i];
                 if (!row || row.length < 10) continue;
 
-                const orderId = cleanString(row[0]);
+                const noPesanan = cleanString(row[0]);
                 const invoice = cleanString(row[62]);
-                const id = orderId || invoice; // Prioritize Platform Order ID
+                const id = noPesanan || invoice; 
                 if (!id) continue;
 
                 const status = cleanString(row[1]);
@@ -779,33 +747,30 @@
                 const resi = cleanString(row[39]);
                 const kurirAsli = cleanString(row[41]); // 42nd col
                 
-                // Dates
-                const tglBuat = cleanString(row[29]);
-                const tglBatal = cleanString(row[34]);
-                const tglSelesai = cleanString(row[33]);
-                
+                const tglBuat = getExcelDate(row[29]);
+                const tglBatal = getExcelDate(row[34]);
+                const tglSelesai = getExcelDate(row[33]);
                 let tglPakai = tglBuat;
-                if (status.toLowerCase().includes('cancel') && tglBatal) tglPakai = tglBatal;
-                else if (status.toLowerCase().includes('delivered') && tglSelesai) tglPakai = tglSelesai;
+                if (status.toLowerCase().includes('cancel') && tglBatal !== '-') tglPakai = tglBatal;
+                else if (status.toLowerCase().includes('delivered') && tglSelesai !== '-') tglPakai = tglSelesai;
 
-                const sku = cleanString(row[6]); // Seller SKU input (7th col)
+                const sku = cleanString(row[6]); // 7th col
                 const namaProduk = cleanString(row[7]);
-                const hargaDiskon = parseNumber(row[11]); // Original Price, since Toped separates discount
+                const hargaDiskon = parseNumber(row[11]); 
                 const qty = parseNumber(row[9]);
                 
-                // Toped Financials
-                const diskonShopee = parseNumber(row[13]); // Platform discount
-                const diskonPenjual = parseNumber(row[14]); // Seller discount
+                const diskonShopee = parseNumber(row[13]); 
+                const diskonPenjual = parseNumber(row[14]); 
                 
                 const ongkirPembeli = parseNumber(row[17]);
-                const potOngkir = parseNumber(row[19]); // platform shipping discount
-                const ongkirRetur = 0; // Not clearly defined in sample cols, set 0
-                const totalBayar = parseNumber(row[28]); // amount paid by buyer
+                const potOngkir = parseNumber(row[19]); 
+                const ongkirRetur = 0; 
+                const totalBayar = parseNumber(row[28]); 
                 const perkiraanOngkir = parseNumber(row[17]);
 
                 if (!processed.has(id)) {
                     processed.set(id, {
-                        noPesanan: id, // Use order ID
+                        noPesanan: noPesanan, 
                         invoice: invoice,
                         status: status,
                         alasan: alasan || '-',
@@ -817,44 +782,30 @@
                         items: [],
                         totalPenjualan: 0,
                         totalQty: 0,
-                        
                         diskonPenjual: diskonPenjual,
-                        voucherPenjual: 0, // Maps slightly diff in toped
+                        voucherPenjual: 0, 
                         voucherShopee: diskonShopee,
                         paketDiskonPenjual: 0,
                         totalPromoToko: diskonPenjual,
-
                         ongkirPembeli, potOngkir, ongkirRetur, totalBayar, perkiraanOngkir
                     });
                 }
 
                 const order = processed.get(id);
-                // Subtotal calculation for Toped: (Price * Qty) - Diskon Penjual - Diskon Toped
-                // We'll just use gross for items to match Shopee logic
                 const subtotal = hargaDiskon * qty;
                 
-                order.items.push({
-                    sku: sku,
-                    namaProduk: namaProduk,
-                    hargaDiskon: hargaDiskon,
-                    qty: qty,
-                    totalItem: subtotal
-                });
-                
+                order.items.push({ sku: sku, namaProduk: namaProduk, hargaDiskon: hargaDiskon, qty: qty, totalItem: subtotal });
                 order.totalPenjualan += subtotal;
                 order.totalQty += qty;
             }
 
-            if (processed.size === 0) {
-                throw new Error("Data valid tidak ditemukan.");
-            }
-
+            if (processed.size === 0) throw new Error("Data valid tidak ditemukan.");
             rawData1 = Array.from(processed.values());
             document.getElementById('displayFileName').textContent = fileName;
             buildDashboard();
         }
 
-        // ------------------ BUILD DASHBOARD ------------------
+        // --- DASHBOARD ---
         function buildDashboard() {
             globalListSelesai = [];
             globalListBatal = [];
@@ -878,9 +829,7 @@
                     category = 'Selesai';
                     globalListSelesai.push(o);
                     valSelesai += o.totalPenjualan;
-                    
-                    // Trend
-                    if (o.tanggal) {
+                    if (o.tanggal && o.tanggal !== '-') {
                         const monthYear = new Date(o.tanggal).toLocaleString('id-ID', { month: 'short', year: 'numeric' });
                         if(monthYear !== 'Invalid Date') trendMap.set(monthYear, (trendMap.get(monthYear) || 0) + o.totalPenjualan);
                     }
@@ -914,11 +863,9 @@
                 vTotalBayar += o.totalBayar;
                 vPerkiraanOngkir += o.perkiraanOngkir;
 
-                // Kurir
                 if (!kurirMap.has(o.kurirNormal)) kurirMap.set(o.kurirNormal, []);
                 kurirMap.get(o.kurirNormal).push(o);
 
-                // Produk
                 o.items.forEach(it => {
                     const key = it.sku || it.namaProduk;
                     if(!produkMap.has(key)) produkMap.set(key, { sku: it.sku, nama: it.namaProduk, freq: 0, qty: 0, nominal: 0, orders: [] });
@@ -930,12 +877,9 @@
                 });
             });
 
-            // Update UI
             document.getElementById('headerTotalPesanan').textContent = rawData1.length;
-            
             document.getElementById('kpiSelesai').textContent = formatRupiah(valSelesai);
             document.getElementById('kpiSelesaiQty').textContent = `${globalListSelesai.length} Pesanan`;
-            
             document.getElementById('kpiBatal').textContent = formatRupiah(valBatal);
             document.getElementById('kpiBatalQty').textContent = `${globalListBatal.length} Pesanan`;
 
@@ -949,7 +893,7 @@
             document.getElementById('kpiTotalPembayaran').textContent = formatRupiah(vTotalBayar);
             document.getElementById('kpiPerkiraanOngkir').textContent = formatRupiah(vPerkiraanOngkir);
 
-            // Click Listeners
+            // Clicks
             attachMainModal('cardSelesai', 'SELESAI', 'green', 'Total Transaksi Selesai', 'check-circle');
             attachMainModal('cardBatal', 'BATAL', 'red', 'Potensi Pendapatan Hilang (Batal)', 'x-circle');
             attachMainModal('cardDiskonPenjual', 'PROMO_TOKO', 'orange', 'Diskon & Paket Ditanggung Penjual', 'tags');
@@ -968,8 +912,8 @@
             renderKurir(kurirMap);
             renderTopProduk(produkMap);
 
-            uploadScreen.classList.add('hidden-section');
-            dashboardScreen.classList.remove('hidden-section');
+            document.getElementById('uploadScreen').classList.add('hidden-section');
+            document.getElementById('dashboardScreen').classList.remove('hidden-section');
         }
 
         // --- CHARTS ---
@@ -994,7 +938,7 @@
         function drawStatusChart(sMap) {
             if(statusChartObj) statusChartObj.destroy();
             const ctx = document.getElementById('statusChart').getContext('2d');
-            const mode = document.getElementById('pieFilterMode').value; // QTY / NOMINAL
+            const mode = document.getElementById('pieFilterMode').value; 
             const dataArr = [sMap['Selesai'][mode.toLowerCase()], sMap['Batal'][mode.toLowerCase()], sMap['Lainnya'][mode.toLowerCase()]];
             
             statusChartObj = new Chart(ctx, {
@@ -1010,9 +954,7 @@
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false, cutout: '60%',
-                    plugins: {
-                        tooltip: { callbacks: { label: c => mode === 'NOMINAL' ? formatRupiah(c.raw) : c.raw + ' Pesanan' } }
-                    },
+                    plugins: { tooltip: { callbacks: { label: c => mode === 'NOMINAL' ? formatRupiah(c.raw) : c.raw + ' Pesanan' } } },
                     onClick: (evt, items) => {
                         if(items.length > 0) {
                             const idx = items[0].index;
@@ -1051,17 +993,12 @@
                     datasets: [{
                         label: mode === 'QTY' ? 'Jumlah' : 'Nominal', 
                         data: dataArr, 
-                        backgroundColor: '#FCA5A5', 
-                        hoverBackgroundColor: '#EF4444', 
-                        borderRadius: 4
+                        backgroundColor: '#FCA5A5', hoverBackgroundColor: '#EF4444', borderRadius: 4
                     }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: { 
-                        legend: {display: false},
-                        tooltip: { callbacks: { title: c => fullLabels[c[0].dataIndex], label: c => mode === 'NOMINAL' ? formatRupiah(c.raw) : c.raw } }
-                    },
+                    plugins: { legend: {display: false}, tooltip: { callbacks: { title: c => fullLabels[c[0].dataIndex], label: c => mode === 'NOMINAL' ? formatRupiah(c.raw) : c.raw } } },
                     onClick: (evt, items) => {
                         if(items.length > 0) {
                             const reason = fullLabels[items[0].index];
@@ -1078,9 +1015,7 @@
             globalListBatal.forEach(o => {
                 if (o.alasan && o.alasan !== '-') {
                     const aData = aMap.get(o.alasan) || {qty:0, val:0};
-                    aData.qty += 1;
-                    aData.val += o.totalPenjualan;
-                    aMap.set(o.alasan, aData);
+                    aData.qty += 1; aData.val += o.totalPenjualan; aMap.set(o.alasan, aData);
                 }
             });
             drawAlasanChart(aMap);
@@ -1092,12 +1027,11 @@
             cont.innerHTML = '';
             Array.from(kurirMap.entries()).sort((a,b) => b[1].length - a[1].length).forEach(([k, list]) => {
                 let div = document.createElement('div');
-                div.className = "bg-white p-3 rounded-lg border border-gray-100 flex justify-between items-center interactive-card";
+                div.className = "bg-white p-3 rounded-lg border border-gray-100 flex justify-between items-center interactive-card cursor-pointer";
                 div.innerHTML = `<span class="font-medium text-sm text-gray-700">${k}</span> <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-bold">${list.length}</span>`;
                 div.onclick = () => {
-                    currentMainModalType = 'KURIR';
                     document.getElementById('mainModalTitle').innerHTML = `<i data-lucide="truck" class="inline h-5 w-5 mr-2 text-gray-500"></i> Pengiriman: ${k}`;
-                    openMainModalWithList(list, 'gray');
+                    openMainModalWithList('KURIR', list, 'gray');
                 };
                 cont.appendChild(div);
             });
@@ -1114,7 +1048,6 @@
             
             let sorted = Array.from(produkMap.values()).sort((a,b) => b[currentTopProdukSort] - a[currentTopProdukSort]).slice(0, 10);
             
-            // Highlight active header
             ['thSortFreq', 'thSortQty', 'thSortNominal'].forEach(id => document.getElementById(id).classList.remove('bg-gray-100'));
             const activeId = currentTopProdukSort === 'freq' ? 'thSortFreq' : (currentTopProdukSort === 'qty' ? 'thSortQty' : 'thSortNominal');
             document.getElementById(activeId).classList.add('bg-gray-100');
@@ -1164,53 +1097,48 @@
             document.getElementById('productModal').classList.remove('hidden');
         }
 
-        // --- MAIN MODALS (Selesai, Batal, Promo dll) ---
+        // --- MAIN MODALS ---
         function attachMainModal(elementId, type, color, title, icon) {
-            document.getElementById(elementId).onclick = () => openMainModal(type, color, title, icon);
+            document.getElementById(elementId).onclick = () => {
+                document.getElementById('mainModalTitle').innerHTML = `<i data-lucide="${icon}" class="inline h-5 w-5 mr-2 text-${color}-500"></i> ${title}`;
+                let list = [];
+                if (type === 'SELESAI') list = globalListSelesai;
+                else if (type === 'BATAL') list = globalListBatal;
+                else if (type === 'PROMO_TOKO') list = rawData1.filter(o => o.totalPromoToko > 0);
+                else if (type === 'VOUCHER_TOKO') list = rawData1.filter(o => o.voucherPenjual > 0);
+                else if (type === 'VOUCHER_PLATFORM') list = rawData1.filter(o => o.voucherShopee > 0);
+                else if (type === 'ONGKIR_PEMBELI') list = rawData1.filter(o => o.ongkirPembeli > 0);
+                else if (type === 'ONGKIR_POTONGAN') list = rawData1.filter(o => o.potOngkir > 0);
+                else if (type === 'ONGKIR_RETUR') list = rawData1.filter(o => o.ongkirRetur > 0);
+                else if (type === 'TOTAL_PEMBAYARAN') list = rawData1.filter(o => o.totalBayar > 0);
+                else if (type === 'ONGKIR_PERKIRAAN') list = rawData1.filter(o => o.perkiraanOngkir > 0);
+                
+                openMainModalWithList(type, list, color, 'ALL');
+            };
         }
 
         let mainModalDataList = [];
 
         function openMainModal(type, color, title, icon, defaultReasonFilter = 'ALL') {
-            currentMainModalType = type;
             document.getElementById('mainModalTitle').innerHTML = `<i data-lucide="${icon}" class="inline h-5 w-5 mr-2 text-${color}-500"></i> ${title}`;
-            
-            // Identify list based on type
-            mainModalDataList = [];
-            if (type === 'SELESAI') mainModalDataList = globalListSelesai;
-            else if (type === 'BATAL') mainModalDataList = globalListBatal;
-            else if (type === 'PROSES') mainModalDataList = globalListProses;
-            else if (type === 'PROMO_TOKO') mainModalDataList = rawData1.filter(o => o.totalPromoToko > 0);
-            else if (type === 'VOUCHER_TOKO') mainModalDataList = rawData1.filter(o => o.voucherPenjual > 0);
-            else if (type === 'VOUCHER_PLATFORM') mainModalDataList = rawData1.filter(o => o.voucherShopee > 0);
-            else if (type === 'ONGKIR_PEMBELI') mainModalDataList = rawData1.filter(o => o.ongkirPembeli > 0);
-            else if (type === 'ONGKIR_POTONGAN') mainModalDataList = rawData1.filter(o => o.potOngkir > 0);
-            else if (type === 'ONGKIR_RETUR') mainModalDataList = rawData1.filter(o => o.ongkirRetur > 0);
-            else if (type === 'TOTAL_PEMBAYARAN') mainModalDataList = rawData1.filter(o => o.totalBayar > 0);
-            else if (type === 'ONGKIR_PERKIRAAN') mainModalDataList = rawData1.filter(o => o.perkiraanOngkir > 0);
-
-            openMainModalWithList(mainModalDataList, color, defaultReasonFilter);
+            let list = type === 'SELESAI' ? globalListSelesai : (type === 'BATAL' ? globalListBatal : globalListProses);
+            openMainModalWithList(type, list, color, defaultReasonFilter);
         }
 
-        function openMainModalWithList(list, color, defaultReasonFilter = 'ALL') {
+        function openMainModalWithList(type, list, color, defaultReasonFilter = 'ALL') {
+            currentMainModalType = type;
             mainModalDataList = list;
             
             document.getElementById('mainModalSearch').value = '';
             const selKurir = document.getElementById('mainModalKurir');
             selKurir.innerHTML = '<option value="ALL">Semua Kurir</option>';
-            const kurirSet = new Set(list.map(o => o.kurirNormal));
-            kurirSet.forEach(k => {
-                let opt = document.createElement('option'); opt.value = k; opt.textContent = k; selKurir.appendChild(opt);
-            });
+            new Set(list.map(o => o.kurirNormal)).forEach(k => selKurir.appendChild(new Option(k, k)));
 
             const selAlasan = document.getElementById('mainModalAlasan');
-            if (currentMainModalType === 'BATAL') {
+            if (type === 'BATAL') {
                 selAlasan.classList.remove('hidden');
                 selAlasan.innerHTML = '<option value="ALL">Semua Alasan</option>';
-                const alasanSet = new Set(list.map(o => o.alasan).filter(a => a && a !== '-'));
-                alasanSet.forEach(a => {
-                    let opt = document.createElement('option'); opt.value = a; opt.textContent = a.length > 30 ? a.substring(0,30)+'...' : a; selAlasan.appendChild(opt);
-                });
+                new Set(list.map(o => o.alasan).filter(a => a && a !== '-')).forEach(a => selAlasan.appendChild(new Option(a.length > 30 ? a.substring(0,30)+'...' : a, a)));
                 selAlasan.value = defaultReasonFilter;
             } else {
                 selAlasan.classList.add('hidden');
@@ -1304,8 +1232,7 @@
 
         document.getElementById('btnCloseMainModal').addEventListener('click', () => document.getElementById('mainModal').classList.add('hidden'));
 
-
-        // --- COMPARE DATA AIO (FILE 2) ---
+        // --- DATA AIO (FILE 2) ---
         document.getElementById('compareFileInput').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -1319,29 +1246,26 @@
                     const rawJson = XLSX.utils.sheet_to_json(ws, {header: 1, raw: false, defval: ""});
                     
                     compareResults = [];
-                    let cSesuai = 0, cDiff = 0, cBatal = 0;
+                    let cSesuai = 0, cDiff = 0, cBatal = 0, cBaruDiterima = 0;
 
                     for (let i = 1; i < rawJson.length; i++) {
                         const row = rawJson[i];
                         if (!row || row.length < 5) continue;
 
-                        const aioDate = cleanString(row[1]);
+                        const aioDate = getExcelDate(row[1]);
                         let rawOrderStr = cleanString(row[2]);
                         const nominalAIO = parseNumber(row[4]);
                         const invoiceData2 = cleanString(row[0]); 
                         
                         if (!rawOrderStr) continue;
 
-                        // Advanced Cleaning for AIO Order ID
                         let orderIdAIO = rawOrderStr;
                         if (platform === 'SHOPEE') {
                             orderIdAIO = orderIdAIO.replace(/ONLINE SHOPEE\s*/i, '').replace(/GOMART\s*/i, '').replace(/SP-/i, '').trim();
                         } else {
-                            // Tokopedia: Extract long numeric string
                             let tpMatch = orderIdAIO.match(/TP-(\d+)/i);
-                            if (tpMatch) {
-                                orderIdAIO = tpMatch[1];
-                            } else {
+                            if (tpMatch) orderIdAIO = tpMatch[1];
+                            else {
                                 let numMatch = orderIdAIO.match(/\d{15,}/);
                                 if (numMatch) orderIdAIO = numMatch[0];
                             }
@@ -1353,8 +1277,15 @@
                             let selisih = Math.abs(d1Match.totalPenjualan - nominalAIO);
                             let tipe = '';
                             let statLC = d1Match.status.toLowerCase();
+                            let alasanLC = d1Match.alasan.toLowerCase();
 
-                            if (statLC.includes('batal') || statLC.includes('cancel') || statLC.includes('pengembalian')) {
+                            // Filter "Pesanan Baru Diterima"
+                            const isPesananBaru = platform === 'SHOPEE' && (statLC.includes('pesanan diterima, namun pembeli masih dapat mengajukan pengembalian') || alasanLC.includes('pesanan diterima, namun pembeli masih dapat mengajukan pengembalian'));
+
+                            if (isPesananBaru) {
+                                tipe = 'PESANAN_BARU_DITERIMA';
+                                cBaruDiterima++;
+                            } else if (statLC.includes('batal') || statLC.includes('cancel') || statLC.includes('pengembalian')) {
                                 tipe = 'BATAL_DI_PLATFORM';
                                 cBatal++;
                             } else if (selisih === 0) {
@@ -1385,6 +1316,7 @@
                     document.getElementById('compSesuai').textContent = cSesuai;
                     document.getElementById('compDiff').textContent = cDiff;
                     document.getElementById('compBatal').textContent = cBatal;
+                    document.getElementById('compBaruDiterima').textContent = cBaruDiterima;
 
                     document.getElementById('compareUploadArea').classList.add('hidden');
                     document.getElementById('compareResultsArea').classList.remove('hidden-section');
@@ -1397,15 +1329,7 @@
             reader.readAsArrayBuffer(file);
         });
 
-        document.getElementById('btnResetCompare').addEventListener('click', () => {
-            document.getElementById('compareFileInput').value = '';
-            document.getElementById('compareUploadArea').classList.remove('hidden');
-            document.getElementById('compareResultsArea').classList.add('hidden-section');
-            compareResults = [];
-        });
-
-
-        // --- TOKOPEDIA EXTRA VALIDATION (DATA 3) ---
+        // --- TOKOPEDIA EXTRA (FILE 3) ---
         document.getElementById('extraFileInput').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -1431,35 +1355,25 @@
 
                         let orderIdD3 = rawOrderStr;
                         let tpMatch = orderIdD3.match(/TP-(\d+)/i);
-                        if (tpMatch) {
-                            orderIdD3 = tpMatch[1];
-                        } else {
+                        if (tpMatch) orderIdD3 = tpMatch[1];
+                        else {
                             let numMatch = orderIdD3.match(/\d{15,}/);
                             if (numMatch) orderIdD3 = numMatch[0];
                         }
 
-                        // Compare with AIO Data (compareResults)
                         const aioMatch = compareResults.find(r => r.noPesanan === orderIdD3 || r.invoice === orderIdD3);
 
                         if (aioMatch) {
                             let selisihExtra = Math.abs(aioMatch.totalD2 - nominalD3);
                             let tipeExtra = selisihExtra === 0 ? 'EXTRA_SESUAI' : 'EXTRA_BEDA';
-                            
                             if (selisihExtra === 0) cMatch++; else cDiff++;
-
-                            compareExtraResults.push({
-                                ...aioMatch,
-                                totalD3: nominalD3,
-                                selisihExtra: selisihExtra,
-                                tipeExtra: tipeExtra
-                            });
+                            compareExtraResults.push({ ...aioMatch, totalD3: nominalD3, selisihExtra: selisihExtra, tipeExtra: tipeExtra });
                         }
                     }
 
                     document.getElementById('extraTotal').textContent = compareExtraResults.length;
                     document.getElementById('extraMatch').textContent = cMatch;
                     document.getElementById('extraDiff').textContent = cDiff;
-
                     document.getElementById('extraUploadArea').classList.add('hidden');
                     document.getElementById('extraResultsArea').classList.remove('hidden-section');
 
@@ -1471,34 +1385,10 @@
             reader.readAsArrayBuffer(file);
         });
 
-        document.getElementById('cardExtraTotal').addEventListener('click', () => window.openExtraValidationModal('ALL'));
-        document.getElementById('cardExtraMatch').addEventListener('click', () => window.openExtraValidationModal('MATCH'));
-        document.getElementById('cardExtraDiff').addEventListener('click', () => window.openExtraValidationModal('DIFF'));
-
-        window.openExtraValidationModal = (mode) => {
-            currentCompareType = 'EXTRA_VALIDATION';
-            currentExtraFilterMode = mode;
-            
-            let title = mode === 'MATCH' ? 'Berhasil Tervalidasi' : (mode === 'DIFF' ? 'Sisa Beda Nominal' : 'Total Validasi');
-            let icon = mode === 'MATCH' ? 'check-circle' : 'alert-triangle';
-            let color = mode === 'MATCH' ? 'green' : 'yellow';
-
-            document.getElementById('compareModalTitle').innerHTML = `<i data-lucide="${icon}" class="inline h-5 w-5 mr-2 text-${color}-500"></i> ${title}`;
-            document.getElementById('compareModalSearch').value = '';
-
-            document.getElementById('thStatusPlat').textContent = 'Status Tokopedia';
-            document.getElementById('thCompareD1').textContent = 'Data AIO (D2)';
-            document.getElementById('thCompareD2').textContent = 'Data Validasi (D3)';
-            document.getElementById('thCompareSelisih').textContent = 'Selisih (D2 - D3)';
-
-            populateCompareFilters(compareExtraResults);
-            applyCompareFilters();
-            document.getElementById('compareModal').classList.remove('hidden');
-        };
-
-        // --- COMPARE MODALS LOGIC ---
+        // --- COMPARE MODALS ---
         document.getElementById('cardCompSesuai').addEventListener('click', () => window.openCompareModal('SESUAI', 'green', 'Pesanan Sesuai Nominal', 'check-circle-2'));
         document.getElementById('cardCompDiff').addEventListener('click', () => window.openCompareModal('BEDA_NOMINAL', 'yellow', 'Rincian Beda Nominal', 'alert-triangle'));
+        document.getElementById('cardCompBaruDiterima').addEventListener('click', () => window.openCompareModal('PESANAN_BARU_DITERIMA', 'teal', 'Pesanan Baru Diterima', 'package-check'));
         document.getElementById('cardCompBatal').addEventListener('click', () => window.openCompareModal('BATAL_DI_PLATFORM', 'red', `Pesanan Batal di ${platform === 'SHOPEE' ? 'Shopee' : 'Tokopedia'}`, 'x-circle'));
 
         window.openCompareModal = (type, color, title, icon) => {
@@ -1511,24 +1401,49 @@
             document.getElementById('thCompareD2').textContent = 'Nominal AIO (D2)';
             document.getElementById('thCompareSelisih').textContent = 'Selisih';
 
-            populateCompareFilters(compareResults.filter(r => r.tipe === type));
+            let listData = compareResults.filter(r => r.tipe === type);
+            const selStatus = document.getElementById('compareModalStatusFilter');
+            selStatus.innerHTML = '<option value="ALL">Semua Status</option>';
+            new Set(listData.map(r => r.statusD1)).forEach(s => selStatus.appendChild(new Option(s, s)));
+
+            const selKurir = document.getElementById('compareModalKurirFilter');
+            selKurir.innerHTML = '<option value="ALL">Semua Kurir</option>';
+            new Set(listData.map(r => r.kurirD1)).forEach(k => selKurir.appendChild(new Option(k, k)));
+
             applyCompareFilters();
             document.getElementById('compareModal').classList.remove('hidden');
         };
 
-        function populateCompareFilters(listData) {
+        // Extra Tokopedia Modals
+        document.getElementById('cardExtraTotal').addEventListener('click', () => window.openExtraValidationModal('ALL'));
+        document.getElementById('cardExtraMatch').addEventListener('click', () => window.openExtraValidationModal('MATCH'));
+        document.getElementById('cardExtraDiff').addEventListener('click', () => window.openExtraValidationModal('DIFF'));
+
+        window.openExtraValidationModal = (mode) => {
+            currentCompareType = 'EXTRA_VALIDATION';
+            currentExtraFilterMode = mode;
+            let title = mode === 'MATCH' ? 'Berhasil Tervalidasi' : (mode === 'DIFF' ? 'Sisa Beda Nominal' : 'Total Validasi');
+            let icon = mode === 'MATCH' ? 'check-circle' : 'alert-triangle';
+            let color = mode === 'MATCH' ? 'green' : 'yellow';
+
+            document.getElementById('compareModalTitle').innerHTML = `<i data-lucide="${icon}" class="inline h-5 w-5 mr-2 text-${color}-500"></i> ${title}`;
+            document.getElementById('compareModalSearch').value = '';
+            document.getElementById('thStatusPlat').textContent = 'Status Tokopedia';
+            document.getElementById('thCompareD1').textContent = 'Data AIO (D2)';
+            document.getElementById('thCompareD2').textContent = 'Data Validasi (D3)';
+            document.getElementById('thCompareSelisih').textContent = 'Selisih (D2 - D3)';
+
             const selStatus = document.getElementById('compareModalStatusFilter');
             selStatus.innerHTML = '<option value="ALL">Semua Status</option>';
-            new Set(listData.map(r => r.statusD1)).forEach(s => {
-                let opt = document.createElement('option'); opt.value = s; opt.textContent = s; selStatus.appendChild(opt);
-            });
+            new Set(compareExtraResults.map(r => r.statusD1)).forEach(s => selStatus.appendChild(new Option(s, s)));
 
             const selKurir = document.getElementById('compareModalKurirFilter');
             selKurir.innerHTML = '<option value="ALL">Semua Kurir</option>';
-            new Set(listData.map(r => r.kurirD1)).forEach(k => {
-                let opt = document.createElement('option'); opt.value = k; opt.textContent = k; selKurir.appendChild(opt);
-            });
-        }
+            new Set(compareExtraResults.map(r => r.kurirD1)).forEach(k => selKurir.appendChild(new Option(k, k)));
+
+            applyCompareFilters();
+            document.getElementById('compareModal').classList.remove('hidden');
+        };
 
         function applyCompareFilters() {
             const s = document.getElementById('compareModalSearch').value.toLowerCase();
@@ -1542,7 +1457,6 @@
                     let matchType = true;
                     if(currentExtraFilterMode === 'MATCH' && r.tipeExtra !== 'EXTRA_SESUAI') matchType = false;
                     if(currentExtraFilterMode === 'DIFF' && r.tipeExtra === 'EXTRA_SESUAI') matchType = false;
-
                     let matchS = (r.noPesanan || '').toLowerCase().includes(s) || (r.invoice || '').toLowerCase().includes(s);
                     let matchStatus = statusF === 'ALL' || r.statusD1 === statusF;
                     let matchKurir = kurirF === 'ALL' || r.kurirD1 === kurirF;
@@ -1553,19 +1467,17 @@
                     let tr = document.createElement('tr');
                     tr.className = 'bg-white border-b hover:bg-gray-50';
                     tr.innerHTML = `
-                        <td class="px-6 py-4">
-                            <div class="font-medium text-gray-900 cursor-pointer hover:text-blue-600" onclick="toggleCompareChildRow('${r.noPesanan}')">
+                        <td class="px-6 py-4 align-top">
+                            <div class="font-medium text-gray-900 cursor-pointer hover:text-blue-600" onclick="toggleCompareDetail('${r.noPesanan}')">
                                 ${r.noPesanan} <i data-lucide="chevron-down" class="inline h-4 w-4"></i>
                             </div>
                             ${r.invoice && r.invoice !== r.noPesanan ? `<div class="text-xs text-gray-500 mt-1">${r.invoice}</div>` : ''}
                             <div class="text-xs text-blue-600 mt-1">${r.kurirD1}</div>
                         </td>
-                        <td class="px-6 py-4"><span class="bg-gray-100 px-2 py-1 rounded text-xs font-medium">${r.statusD1}</span></td>
-                        <td class="px-6 py-4 font-medium text-gray-900">${formatRupiah(r.totalD2)}</td>
-                        <td class="px-6 py-4 font-medium text-gray-900">${r.tipeExtra === 'EXTRA_NOT_FOUND' ? '<span class="text-red-500 text-xs">Tidak Ditemukan</span>' : formatRupiah(r.totalD3)}</td>
-                        <td class="px-6 py-4 text-right font-bold ${r.selisihExtra === 0 ? 'text-green-600' : 'text-red-600'}">
-                            ${formatRupiah(r.selisihExtra)}
-                        </td>
+                        <td class="px-6 py-4 align-top"><span class="bg-gray-100 px-2 py-1 rounded text-xs font-medium">${r.statusD1}</span></td>
+                        <td class="px-6 py-4 font-medium text-gray-900 align-top">${formatRupiah(r.totalD2)}</td>
+                        <td class="px-6 py-4 font-medium text-gray-900 align-top">${r.tipeExtra === 'EXTRA_NOT_FOUND' ? '<span class="text-red-500 text-xs">Tidak Ditemukan</span>' : formatRupiah(r.totalD3)}</td>
+                        <td class="px-6 py-4 text-right font-bold align-top ${r.selisihExtra === 0 ? 'text-green-600' : 'text-red-600'}">${formatRupiah(r.selisihExtra)}</td>
                     `;
                     tbody.appendChild(tr);
                     attachCompareChildRow(tbody, r);
@@ -1583,17 +1495,17 @@
                     let tr = document.createElement('tr');
                     tr.className = 'bg-white border-b hover:bg-gray-50';
                     
-                    // Shopee Batal Reason Badge
                     let statusHtml = `<span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">${r.statusD1}</span>`;
                     
+                    // Shopee Cancel Reason Popup
                     if (platform === 'SHOPEE' && currentCompareType === 'BATAL_DI_PLATFORM' && r.orderD1Data && r.orderD1Data.alasan && r.orderD1Data.alasan !== '-') {
                         statusHtml = `
-                            <div class="cursor-pointer" onclick="document.getElementById('rsn-${r.noPesanan}').classList.toggle('hidden')">
+                            <div class="cursor-pointer relative group">
                                 <span class="bg-red-50 text-red-700 border border-red-200 px-2 py-1 rounded text-xs font-bold inline-flex items-center gap-1 hover:bg-red-100 transition-colors">
-                                    ${r.statusD1} <i data-lucide="info" class="h-3 w-3"></i>
+                                    Batal <i data-lucide="info" class="h-3 w-3"></i>
                                 </span>
-                                <div id="rsn-${r.noPesanan}" class="hidden mt-2 p-2.5 bg-gray-800 text-white rounded-lg text-xs shadow-lg leading-relaxed z-10 relative">
-                                    <span class="text-gray-400 font-bold mb-1 block">Info Pembatalan:</span>
+                                <div class="hidden group-hover:block absolute left-0 top-full mt-2 w-48 p-2.5 bg-gray-800 text-white rounded-lg text-xs shadow-lg leading-relaxed z-50">
+                                    <span class="text-gray-400 font-bold mb-1 block">Alasan Pembatalan:</span>
                                     ${r.orderD1Data.alasan}
                                 </div>
                             </div>
@@ -1603,8 +1515,8 @@
                     }
 
                     tr.innerHTML = `
-                        <td class="px-6 py-4">
-                            <div class="font-medium text-gray-900 cursor-pointer hover:text-blue-600" onclick="toggleCompareChildRow('${r.noPesanan}')">
+                        <td class="px-6 py-4 align-top">
+                            <div class="font-medium text-gray-900 cursor-pointer hover:text-blue-600" onclick="toggleCompareDetail('${r.noPesanan}')">
                                 ${r.noPesanan} <i data-lucide="chevron-down" class="inline h-4 w-4"></i>
                             </div>
                             <div class="text-[10px] text-gray-500 mt-1">${r.tanggalD1 || r.tanggalAIO || '-'}</div>
@@ -1614,9 +1526,7 @@
                         <td class="px-6 py-4 align-top">${statusHtml}</td>
                         <td class="px-6 py-4 font-medium text-gray-900 align-top">${formatRupiah(r.totalD1)}</td>
                         <td class="px-6 py-4 font-medium text-gray-900 align-top">${formatRupiah(r.totalD2)}</td>
-                        <td class="px-6 py-4 text-right font-bold align-top ${r.selisih === 0 ? 'text-green-600' : 'text-red-600'}">
-                            ${formatRupiah(r.selisih)}
-                        </td>
+                        <td class="px-6 py-4 text-right font-bold align-top ${r.selisih === 0 ? 'text-green-600' : 'text-red-600'}">${formatRupiah(r.selisih)}</td>
                     `;
                     tbody.appendChild(tr);
                     attachCompareChildRow(tbody, r);
@@ -1627,29 +1537,24 @@
 
         function attachCompareChildRow(tbody, r) {
             let trChild = document.createElement('tr');
-            trChild.id = `compchild-${r.noPesanan}`;
+            trChild.id = `compdtl-${r.noPesanan}`;
             trChild.className = 'hidden bg-gray-50 border-b';
-            
-            let itemsHtml = '<div class="text-xs text-gray-500 p-2">Rincian produk tidak tersedia di Data 1</div>';
+            let itemsHtml = '<div class="text-xs text-gray-500 p-2">Rincian produk tidak tersedia</div>';
             if (r.orderD1Data && r.orderD1Data.items && r.orderD1Data.items.length > 0) {
                 itemsHtml = r.orderD1Data.items.map(it => `
                     <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
-                        <div class="flex-1 pr-4">
-                            <div class="text-xs font-medium text-gray-800">${it.namaProduk}</div>
-                            <div class="text-[10px] text-gray-500">SKU: ${it.sku || '-'}</div>
-                        </div>
+                        <div class="flex-1 pr-4"><div class="text-xs font-medium text-gray-800">${it.namaProduk}</div><div class="text-[10px] text-gray-500">SKU: ${it.sku || '-'}</div></div>
                         <div class="text-xs text-gray-600 w-16 text-center">${it.qty}x</div>
                         <div class="text-xs font-bold text-gray-800 w-24 text-right">${formatRupiah(it.totalItem)}</div>
                     </div>
                 `).join('');
             }
-            
             trChild.innerHTML = `<td colspan="5" class="px-6 py-3"><div class="bg-white border rounded-lg p-3 shadow-inner">${itemsHtml}</div></td>`;
             tbody.appendChild(trChild);
         }
 
-        window.toggleCompareChildRow = (id) => {
-            const el = document.getElementById(`compchild-${id}`);
+        window.toggleCompareDetail = (id) => {
+            const el = document.getElementById(`compdtl-${id}`);
             if(el) el.classList.toggle('hidden');
         };
 
@@ -1659,7 +1564,7 @@
 
         document.getElementById('btnCloseCompareModal').addEventListener('click', () => document.getElementById('compareModal').classList.add('hidden'));
 
-        // --- EXCEL EXPORT ---
+        // --- EXPORT EXCEL ---
         function downloadExcel(data, filename) {
             const worksheet = XLSX.utils.json_to_sheet(data);
             const workbook = XLSX.utils.book_new();
@@ -1680,27 +1585,13 @@
                 const matchAlasan = (currentMainModalType !== 'BATAL' || alasan === 'ALL') ? true : o.alasan === alasan;
                 return matchSearch && matchKurir && matchAlasan;
             });
-
             filtered.sort((a, b) => sort === 'DESC' ? b.totalPenjualan - a.totalPenjualan : a.totalPenjualan - b.totalPenjualan);
 
             const exportData = [];
             filtered.forEach(o => {
-                let base = {
-                    "No. Pesanan": o.noPesanan,
-                    "Tanggal": o.waktuLengkap || o.tanggal,
-                    "Status": o.status,
-                    "Alasan": o.alasan,
-                    "Kurir": o.kurirAsli,
-                    "Total Transaksi (Rp)": o.totalPenjualan
-                };
-
-                if (withItem && o.items && o.items.length > 0) {
-                    o.items.forEach(item => {
-                        exportData.push({ ...base, "SKU": item.sku, "Nama Produk": item.namaProduk, "Qty": item.qty, "Harga Diskon": item.hargaDiskon, "Subtotal Item": item.totalItem });
-                    });
-                } else {
-                    exportData.push({ ...base, "SKU": "-", "Nama Produk": "-", "Qty": "-", "Harga Diskon": "-", "Subtotal Item": "-" });
-                }
+                let base = { "No. Pesanan": o.noPesanan, "Tanggal": o.waktuLengkap || o.tanggal, "Status": o.status, "Alasan": o.alasan, "Kurir": o.kurirAsli, "Total Transaksi (Rp)": o.totalPenjualan };
+                if (withItem && o.items.length > 0) o.items.forEach(it => exportData.push({ ...base, "SKU": it.sku, "Nama Produk": it.namaProduk, "Qty": it.qty, "Subtotal Item": it.totalItem }));
+                else exportData.push({ ...base, "SKU": "-", "Nama Produk": "-", "Qty": "-", "Subtotal Item": "-" });
             });
             downloadExcel(exportData, `Ekspor_${currentMainModalType}_${platform}`);
         });
@@ -1716,47 +1607,18 @@
                     let matchType = true;
                     if(currentExtraFilterMode === 'MATCH' && r.tipeExtra !== 'EXTRA_SESUAI') matchType = false;
                     if(currentExtraFilterMode === 'DIFF' && r.tipeExtra === 'EXTRA_SESUAI') matchType = false;
-                    
                     let matchS = (r.noPesanan || '').toLowerCase().includes(s) || (r.invoice || '').toLowerCase().includes(s);
                     let matchStatus = statusF === 'ALL' || r.statusD1 === statusF;
                     let matchKurir = kurirF === 'ALL' || r.kurirD1 === kurirF;
                     return matchType && matchS && matchStatus && matchKurir;
                 });
-                
                 const exportData = [];
                 filtered.forEach(r => {
-                    let base = {};
-                    if (currentExtraFilterMode === 'DIFF') {
-                        base = {
-                            "Tanggal AIO": r.tanggalAIO,
-                            "No. Pesanan": r.noPesanan,
-                            "Invoice": r.invoice,
-                            "Status Platform": r.statusD1,
-                            "Kurir Platform": r.kurirD1,
-                            "Nominal Platform (Data 1)": r.totalD1,
-                            "Nominal AIO (Data 2)": r.totalD2,
-                            "Selisih Nominal Platform antara Data 1 dan Data 2": r.selisih
-                        };
-                    } else {
-                        base = {
-                            "Tanggal AIO": r.tanggalAIO,
-                            "No. Pesanan": r.noPesanan,
-                            "Invoice": r.invoice,
-                            "Status Platform": r.statusD1,
-                            "Kurir Platform": r.kurirD1,
-                            "Nominal Platform (Data 1)": r.totalD1,
-                            "Nominal AIO (Data 2)": r.totalD2,
-                            "Nominal Validasi (Data 3)": r.tipeExtra === 'EXTRA_NOT_FOUND' ? 0 : r.totalD3,
-                            "Status Validasi": r.tipeExtra === 'EXTRA_SESUAI' ? 'Match (D2=D3)' : (r.tipeExtra === 'EXTRA_NOT_FOUND' ? 'Tidak Ditemukan di D3' : 'Beda Nominal'),
-                            "Selisih AIO vs D3": r.selisihExtra
-                        };
-                    }
-
-                    if(withItem && r.orderD1Data && r.orderD1Data.items.length > 0) {
-                        r.orderD1Data.items.forEach(it => exportData.push({ ...base, "SKU": it.sku, "Nama Produk": it.namaProduk, "Qty": it.qty, "Subtotal Item": it.totalItem }));
-                    } else {
-                        exportData.push(base);
-                    }
+                    let base = currentExtraFilterMode === 'DIFF' ? 
+                        { "Tanggal AIO": r.tanggalAIO, "No. Pesanan": r.noPesanan, "Invoice": r.invoice, "Status Platform": r.statusD1, "Kurir Platform": r.kurirD1, "Nominal Platform (Data 1)": r.totalD1, "Nominal AIO (Data 2)": r.totalD2, "Selisih Nominal Platform antara Data 1 dan Data 2": r.selisih } : 
+                        { "Tanggal AIO": r.tanggalAIO, "No. Pesanan": r.noPesanan, "Invoice": r.invoice, "Status Platform": r.statusD1, "Kurir Platform": r.kurirD1, "Nominal Platform (Data 1)": r.totalD1, "Nominal AIO (Data 2)": r.totalD2, "Nominal Validasi (Data 3)": r.tipeExtra === 'EXTRA_NOT_FOUND' ? 0 : r.totalD3, "Status Validasi": r.tipeExtra === 'EXTRA_SESUAI' ? 'Match (D2=D3)' : (r.tipeExtra === 'EXTRA_NOT_FOUND' ? 'Tidak Ditemukan di D3' : 'Beda Nominal'), "Selisih AIO vs D3": r.selisihExtra };
+                    if(withItem && r.orderD1Data.items.length > 0) r.orderD1Data.items.forEach(it => exportData.push({ ...base, "SKU": it.sku, "Nama Produk": it.namaProduk, "Qty": it.qty, "Subtotal Item": it.totalItem }));
+                    else exportData.push(base);
                 });
                 downloadExcel(exportData, `Ekspor_Validasi_Tokopedia_${currentExtraFilterMode}`);
                 return;
@@ -1769,31 +1631,42 @@
                 let matchKurir = kurirF === 'ALL' || r.kurirD1 === kurirF;
                 return matchS && matchStatus && matchKurir;
             });
-
             const exportData = [];
             filtered.forEach(r => {
-                let base = {
-                    "Tanggal AIO": r.tanggalAIO,
-                    "Tanggal Platform": r.tanggalD1,
-                    "No. Pesanan": r.noPesanan,
-                    "Invoice": r.invoice,
-                    "Status Platform": r.statusD1,
-                    "Kurir Platform": r.kurirD1,
-                    "Nominal Platform (Data 1)": r.totalD1,
-                    "Nominal AIO (Data 2)": r.totalD2,
-                    "Selisih": r.selisih
-                };
-
-                if(withItem && r.orderD1Data && r.orderD1Data.items && r.orderD1Data.items.length > 0) {
-                    r.orderD1Data.items.forEach(it => exportData.push({ ...base, "SKU": it.sku, "Nama Produk": it.namaProduk, "Qty": it.qty, "Subtotal Item": it.totalItem }));
-                } else {
-                    exportData.push(base);
-                }
+                let base = { "Tanggal AIO": r.tanggalAIO, "Tanggal Platform": r.tanggalD1, "No. Pesanan": r.noPesanan, "Invoice": r.invoice, "Status Platform": r.statusD1, "Kurir Platform": r.kurirD1, "Nominal Platform (Data 1)": r.totalD1, "Nominal AIO (Data AIO)": r.totalD2, "Selisih": r.selisih };
+                if(withItem && r.orderD1Data.items.length > 0) r.orderD1Data.items.forEach(it => exportData.push({ ...base, "SKU": it.sku, "Nama Produk": it.namaProduk, "Qty": it.qty, "Subtotal Item": it.totalItem }));
+                else exportData.push(base);
             });
-            
             let exportName = currentCompareType;
             if (currentCompareType === 'BATAL_DI_PLATFORM') exportName = `BATAL_DI_${platform}`;
+            else if (currentCompareType === 'PESANAN_BARU_DITERIMA') exportName = `PESANAN_BARU_DITERIMA_${platform}`;
             downloadExcel(exportData, `Ekspor_Komparasi_${exportName}`);
+        });
+
+        document.getElementById('btnResetCompare').addEventListener('click', () => {
+            document.getElementById('compareFileInput').value = '';
+            document.getElementById('compareUploadArea').classList.remove('hidden');
+            document.getElementById('compareResultsArea').classList.add('hidden-section');
+            compareResults = [];
+            document.getElementById('compTotal').textContent = 0;
+            document.getElementById('compSesuai').textContent = 0;
+            document.getElementById('compDiff').textContent = 0;
+            document.getElementById('compBatal').textContent = 0;
+            document.getElementById('compBaruDiterima').textContent = 0;
+        });
+
+        document.getElementById('btnReset').addEventListener('click', () => {
+            document.getElementById('btnResetCompare').click();
+            document.getElementById('extraFileInput').value = '';
+            document.getElementById('extraUploadArea').classList.remove('hidden');
+            document.getElementById('extraResultsArea').classList.add('hidden-section');
+            compareExtraResults = [];
+            
+            document.getElementById('dashboardScreen').classList.add('hidden-section');
+            document.getElementById('uploadScreen').classList.remove('hidden-section');
+            document.getElementById('platformSelection').classList.remove('hidden');
+            document.getElementById('uploadArea').classList.add('hidden');
+            platform = null; rawData1 = [];
         });
 
     </script>
